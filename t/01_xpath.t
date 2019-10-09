@@ -21,6 +21,11 @@ for (
     'e[foo="warning"]' => q<//e[@foo='warning']>,
     'e[foo~="warning"]' => q<//e[contains(concat(' ', @foo, ' '), ' warning ')]>,
     'e[foo^="warning"]' => q<//e[starts-with(@foo, 'warning')]>,
+    'e:not([foo^="warning"])' => q<//e[not(starts-with(@foo, 'warning'))]>,
+     q<e[foo$="warning"]> => q<//e[substring(@foo, string-length(@foo)-6)='warning']>,
+     q<E[lang|="en"]> => q<//e[@lang='en' or starts-with(@lang, 'en-')]>,
+     'DIV.warning' => q<//div[contains(concat(' ', normalize-space(@class), ' '), ' warning ')]>,
+     'E#myid' => q<//e[@id='myid']>,
 ) {
     is CSS::Selector::To::XPath.to-xpath(:css-selectors(.key)), .value, .key;
 }

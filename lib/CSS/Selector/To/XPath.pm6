@@ -26,6 +26,8 @@ multi method _attrib-expr(%name, % ( :$op! ), %val) {
         when '='  { $att ~ '=' ~ $.xpath-string($v)  }
         when '^=' { qq<starts-with($att, $.xpath-string($v))> }
         when '~=' { qq<contains(concat(' ', $att, ' '), { $.xpath-string(' ' ~ $v ~ ' ') })> }
+        when '$=' { qq<substring($att, string-length($att)-{$v.chars-1})=$.xpath-string($v)> }
+        when '|=' { qq<$att=$.xpath-string($v) or starts-with($att, $.xpath-string($v~'-'))> }
         default { warn "unhandled attribute operator: $_"; '' }
     }
 }
@@ -41,15 +43,15 @@ multi method _attrib-expr(%name) {
 multi method _attrib-expr(|c) { die c.perl }
 
 multi method xpath-attrib(List $_) {
-    '[' ~ $._attrib-expr(|$_) ~ ']';
+    $._attrib-expr(|$_);
 }
 
 method xpath-class(Str:D $_) {
-    qq<[contains(concat(' ', normalize-space(@class), ' '), ' $_ ')]>;
+    qq<contains(concat(' ', normalize-space(@class), ' '), ' $_ ')>;
 }
 
 method xpath-id(Str $_) {
-    qq<[@id='$_']>
+    qq<@id={$.xpath-string($_)}>
 }
 
 method xpath-ident(Str $_) {
@@ -61,19 +63,22 @@ method xpath-qname(% (:$element-name!, :$ns-prefix)) {
 }
 
 multi method xpath-pseudo-class('first-child') {
-    '[count(preceding-sibling::*) = 0]'
+    'count(preceding-sibling::*) = 0'
 }
 
-multi sub pseudo-func('lang', % (:$ident )) {
-    qq<[@xml:lang='{$ident}' or starts-with(@xml:lang, '{$ident}-')]>
+multi method _pseudo-func('lang', % (:$ident )) {
+    qq<@xml:lang='{$ident}' or starts-with(@xml:lang, '{$ident}-')>
 }
-multi sub pseudo-func($_, |c) is default {
+multi method _pseudo-func('not', $expr) {
+    qq<not({$.xpath($expr)})>;
+}
+multi method _pseudo-func($_, |c) is default {
     warn "unimplemented pseudo-function: $_";
     '';
 }
 
 multi method xpath-pseudo-func( % (:$ident!, :$expr )) {
-    pseudo-func($ident, |$expr);
+    $._pseudo-func($ident, |$expr);
 }
 
 method xpath-selectors(List $_) {
@@ -96,8 +101,14 @@ method xpath-selector(@spec) {
 }
 
 method xpath-simple-selector(List $_) {
-    my $default-elem = .[0]<qname>.defined ?? '' !! '*';
-    $default-elem ~ .map({ $.xpath($_) }).join;
+    my @l = .list;
+    my $elem = do with @l.head<qname> {
+        $.xpath(@l.shift);
+    }
+    else {
+        '*';
+    }
+    $elem ~ @l.map({ '[' ~ $.xpath($_) ~ ']' }).join;
 }
 
 method xpath-string(Str $_) {
