@@ -10,11 +10,10 @@ multi method xpath(Hash $_ where .elems == 1) {
     self.xpath(.pairs[0]);
 }
 
-multi method xpath-op('=')  { '=' }                              # child
-multi method xpath-op('>')  { '' }                               # child
-multi method xpath-op('~')  { 'following-sibling::' }            # sibling
-multi method xpath-op('+')  { 'following-sibling::*[1]/self::' } # adajacent
-multi method xpath-op($_) is default {
+multi method xpath-combinator('>')  { '' }                               # child
+multi method xpath-combinator('~')  { 'following-sibling::' }            # sibling
+multi method xpath-combinator('+')  { 'following-sibling::*[1]/self::' } # adjacent
+multi method xpath-combinator($_) is default {
     warn "ignoring CSS '$_' operator";
     '';
 }
@@ -67,16 +66,49 @@ method xpath-qname(% (:$element-name!, :$ns-prefix)) {
     $element-name;
 }
 
+multi method xpath-pseudo-class('checked') {
+    '@checked';
+}
+
+multi method xpath-pseudo-class('disabled') {
+    '@disabled';
+}
+
+multi method xpath-pseudo-class('empty') {
+    'not(* or text())';
+}
+
 multi method xpath-pseudo-class('first-child') {
-    'count(preceding-sibling::*) = 0'
+    'count(preceding-sibling::*) = 0 and parent::*'
+}
+
+multi method xpath-pseudo-class('first-of-type') {
+    '1';
 }
 
 multi method xpath-pseudo-class('last-child') {
-    'count(following-sibling::*) = 0'
+    'count(following-sibling::*) = 0 and parent::*'
+}
+
+multi method xpath-pseudo-class('last-of-type') {
+    'last()';
+}
+
+multi method xpath-pseudo-class('only-child') {
+    'count(preceding-sibling::*) = 0 and count(following-sibling::*) = 0 and parent::*'
+}
+
+multi method xpath-pseudo-class('root') {
+    $*IS-ROOT = True;
+    Mu;
+}
+
+multi method xpath-pseudo-class('selected') {
+    '@selected';
 }
 
 multi method xpath-pseudo-class($_) is default {
-    fail "unimplemented pseudo-class: $_";
+    die "unimplemented pseudo-class: $_";
 }
 
 multi method _pseudo-func('lang', % (:$ident )) {
@@ -118,7 +150,7 @@ sub write-AnB($A, $B is copy) {
 
 multi method _pseudo-func('nth-child', *@expr) {
     my ($a, $b) = grok-AnB-expr(@expr);
-    'count(preceding-sibling::*)' ~ write-AnB($a, $b-1);
+    'count(preceding-sibling::*)' ~ write-AnB($a, $b-1) ~ ' and parent::*';
 }
 
 multi method _pseudo-func('nth-of-type', *@expr) {
@@ -146,26 +178,41 @@ method xpath-selectors(List $_) {
 method xpath-selector(@spec) {
     my @sel;
     while (@spec) {
-        my $xpath-op = '/';
+        my $*IS-ROOT = False;
+        my $combinator = '/';
         with @spec.head<op> {
             @spec.shift;
-            $xpath-op = $.xpath-op($_);
+            $combinator = $.xpath-combinator($_);
         }
-        @sel.push: '/' ~ $xpath-op;
-        @sel.push: $.xpath(@spec.shift);
+        my $xpath = $.xpath(@spec.shift);
+        @sel.push: '/'
+            unless $*IS-ROOT;
+        @sel.push: $combinator;
+        @sel.push: $xpath;
     }
     @sel.join;
 }
 
 method xpath-simple-selector(List $_) {
     my @l = .list;
+
     my $elem = do with @l.head<qname> {
         $.xpath(@l.shift);
     }
     else {
         '*';
     }
-    $elem ~ @l.map({ '[' ~ $.xpath($_) ~ ']' }).join;
+
+    my @selections = @l.map({
+        with $.xpath($_) {
+            '[' ~ $_ ~ ']'
+        }
+        else {
+            ''
+        }
+    }).join;
+
+   $elem ~ @selections.join;
 }
 
 method xpath-string(Str $_) {
