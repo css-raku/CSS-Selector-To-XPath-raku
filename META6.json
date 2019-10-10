@@ -7,5 +7,8 @@
     "source-url"  : "git://github.com/p6-css/CSS-Selector-To-XPath-raku.git",
     "provides"    : {
         "CSS::Selector::To::XPath" : "lib/CSS/Selector/To/XPath.pm6"
-     }
+    },
+    "tags" : [
+        "xml", "html", "xpath", "css"
+  ],
 }
