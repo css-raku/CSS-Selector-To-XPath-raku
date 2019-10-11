@@ -2,6 +2,8 @@ use v6;
 
 unit class CSS::Selector::To::XPath;
 
+has Str $.prefix = '';
+
 multi method xpath(Pair $_) {
     self."xpath-{.key}"( .value );
 }
@@ -30,10 +32,6 @@ multi method _attrib-expr(%name, % ( :$op! ), %val) {
         when '*=' { qq<contains($att, $.xpath-string($v))> }
         default { warn "unhandled attribute operator: $_"; '' }
     }
-}
-
-multi method _attrib-expr(% ( :not($expr)! ) ) {
-    'not(' ~ $._attrib-expr(|$expr) ~ ')';
 }
 
 multi method _attrib-expr(%name) {
@@ -153,13 +151,19 @@ multi method _pseudo-func('nth-child', *@expr) {
     'count(preceding-sibling::*)' ~ write-AnB($a, $b-1) ~ ' and parent::*';
 }
 
+multi method _pseudo-func('nth-last-child', *@expr) {
+    my ($a, $b) = grok-AnB-expr(@expr);
+    'count(following-sibling::*)' ~ write-AnB($a, $b-1) ~ ' and parent::*';
+}
+
 multi method _pseudo-func('nth-of-type', *@expr) {
     my ($a, $b) = grok-AnB-expr(@expr);
     $a ?? 'position()' ~ write-AnB($a, $b) !! $b;
 }
 
 multi method _pseudo-func('not', $expr) {
-    qq<not({$.xpath($expr)})>;
+    my $axes = $expr<qname> ?? 'self::' !! '';
+    qq<not({$axes}{$.xpath($expr)})>;
 }
 multi method _pseudo-func($_, *@expr) is default {
     warn "unimplemented pseudo-function: $_\({@expr.perl}\)";
@@ -190,7 +194,7 @@ method xpath-selector(@spec) {
         @sel.push: $combinator;
         @sel.push: $xpath;
     }
-    @sel.join;
+    $!prefix ~ @sel.join;
 }
 
 method xpath-simple-selector(List $_) {
@@ -219,13 +223,15 @@ method xpath-string(Str $_) {
     "'" ~ .subst("'", "''", :g) ~ "'";
 }
 
-method to-xpath(Str:D :$css-selectors) {
+method to-xpath(Str:D $css-selectors) {
+    my $obj = self;
+    $_ .= new without $obj;
     my $actions = (require ::('CSS::Module::CSS3::Selectors::Actions')).new;
     if (require ::('CSS::Module::CSS3::Selectors')).parse($css-selectors, :rule<selectors>, :$actions) {
-        $.xpath($/.ast);
+        $obj.xpath($/.ast);
     }
     else {
-        fail "unable to pass CSS selector: $css-selectors";
+        fail "unable to parse CSS selector: $css-selectors";
     }
 }
 

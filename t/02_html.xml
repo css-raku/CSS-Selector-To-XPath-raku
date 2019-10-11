@@ -1,0 +1,400 @@
+<tests>
+  <test selector='div.foo'>
+    <in>
+      <body>
+        <div class="foo">foo</div>
+        <div class="bar">foo</div>
+      </body>
+    </in>
+    <expected>
+      <div class="foo">foo</div>
+    </expected>
+  </test>
+  <test selector='ul li'>
+    <in>
+      <ul>
+        <li><a href="foo.html">bar</a></li>
+        <li><a href="foo.html">baz</a></li>
+      </ul>
+    </in>
+    <expected>
+      <li><a href="foo.html">bar</a></li>
+      <li><a href="foo.html">baz</a></li>
+    </expected>
+  </test>
+  <test selector='ul li:first-child'>
+    <in>
+      <ul>
+        <li><a href="foo.html">bar</a></li>
+        <li><a href="foo.html">baz</a></li>
+      </ul>
+    </in>
+    <expected>
+      <li><a href="foo.html">bar</a></li>
+    </expected>
+  </test>
+  <test selector='ul li:last-child'>
+    <in>
+      <ul>
+        <li><a href="foo.html">bar</a></li>
+        <li><a href="foo.html">blim</a></li>
+        <li><a href="foo.html">baz</a></li>
+      </ul>
+    </in>
+    <expected>
+      <li><a href="foo.html">baz</a></li>
+    </expected>
+  </test>
+  <test selector='li.bar'>
+    <in>
+      <ul>
+        <li><a href="foo.html">bar</a></li>
+        <li class="bar baz"><a href="foo.html">baz</a></li>
+        <li class="bar"><a href="foo.html">baz</a></li>
+      </ul>
+    </in>
+    <expected>
+      <li class="bar baz"><a href="foo.html">baz</a></li>
+      <li class="bar"><a href="foo.html">baz</a></li>
+    </expected>
+  </test>
+  <test selector='div#bar'>
+    <in>
+      <div>foo</div>
+      <div id="bar">baz</div>
+    </in>
+    <expected>
+      <div id="bar">baz</div>
+    </expected>
+  </test>
+  <test selector='div#bar, div.baz'>
+    <in>
+      <div>foo</div>
+      <div id="bar">baz</div>
+      <div class="baz">baz</div>
+    </in>
+    <expected>
+      <div id="bar">baz</div>
+      <div class="baz">baz</div>
+    </expected>
+  </test>
+  <test selector='div:not([lang|="en"])'>
+    <in>
+      <div>foo</div>
+      <div lang="en">baz</div>
+      <div lang="en-us">baz</div>
+    </in>
+    <expected>
+      <div>foo</div>
+    </expected>
+  </test>
+  <test selector='div:not([class~="foo"])'>
+    <in>
+      <div>foo</div>
+      <div class="foo">baz</div>
+      <div class="foob">baz</div>
+    </in>
+    <expected>
+      <div>foo</div>
+      <div class="foob">baz</div>
+    </expected>
+  </test>
+  <test selector='div:not([class])'>
+    <in>
+      <div>foo</div>
+      <div class="foo">baz</div>
+      <div class="foob">baz</div>
+    </in>
+    <expected>
+      <div>foo</div>
+    </expected>
+  </test>
+  <test selector='*:not(p)'>
+    <in>
+      <p>foo</p>
+      <div class="foo">baz</div>
+    </in>
+    <expected>
+      <div class="foo">baz</div>
+    </expected>
+  </test>
+  <test selector='p.pastoral.marine'>
+    <in>
+      <p class="pastoral blue aqua marine">foo</p>
+      <p class="pastoral blue">bar</p>
+    </in>
+    <expected>
+      <p class="pastoral blue aqua marine">foo</p>
+    </expected>
+  </test>
+  <test selector='p:nth-child(1)'>
+    <in>
+      <p>foo</p>
+      <p>bar</p>
+    </in>
+    <expected>
+      <p>foo</p>
+    </expected>
+  </test>
+  <test selector='p:nth-child(2)'>
+    <in>
+      <p>foo</p>
+      <p>bar</p>
+    </in>
+    <expected>
+      <p>bar</p>
+    </expected>
+  </test>
+  <test selector='a[href*="bar"]'>
+    <in>
+      <a href="no">No</a>
+      <a href="foobar">Foobar</a>
+      <a href="barred">Barred</a>
+      <a href="bar">bar</a>
+    </in>
+    <expected>
+      <a href="foobar">Foobar</a>
+      <a href="barred">Barred</a>
+      <a href="bar">bar</a>
+    </expected>
+  </test>
+  <test selector='a:not([href*="bar"])'>
+    <in>
+      <a href="no">No</a>
+      <a href="foobar">Foobar</a>
+      <a href="barred">Barred</a>
+      <a href="bar">bar</a>
+    </in>
+    <expected>
+      <a href="no">No</a>
+    </expected>
+  </test>
+  <test selector='p > a:nth-of-type(3)'>
+    <in>
+      <p>
+        <a href="no">No</a>
+        <div>Some description</div>
+        <a href="foobar">Foobar</a>
+        <div>Some description</div>
+        <a href="barred">Barred</a>
+        <div>Some description</div>
+        <a href="bar">bar</a>
+      </p>
+    </in>
+    <expected>
+      <a href="barred">Barred</a>
+    </expected>
+  </test>
+  <test selector='p ~ a'>
+    <in>
+      <a href="No">No (no preceding sibling)</a>
+      <p>A header</p>
+      <a href="Yes">Yes</a>
+      <div>Some description</div>
+      <a href="foobar">Foobar</a>
+      <a href="barred">Barred</a>
+      <p>
+        <a href="No">No (child, not sibling)</a>
+      </p>
+    </in>
+    <expected>
+      <a href="Yes">Yes</a>
+      <a href="foobar">Foobar</a>
+      <a href="barred">Barred</a>
+    </expected>
+  </test>
+  <test selector='p ~ a.foo'>
+    <in>
+      <a href="No">No (no preceding sibling)</a>
+      <p>A header</p>
+      <a class="foo" href="Yes">Yes</a>
+      <div>Some description</div>
+      <a href="foobar">Foobar</a>
+      <a href="barred">Barred</a>
+      <p>
+        <a class="foo" href="No">No (child, not sibling)</a>
+      </p>
+    </in>
+    <expected>
+      <a class="foo" href="Yes">Yes</a>
+    </expected>
+  </test>
+  <test selector='p *:contains("description")'>
+    <in>
+      <a href="No">No (no preceding sibling)</a>
+      <p>A header</p>
+      <a class="foo" href="Yes">Yes</a>
+      <div>Some description</div>
+      <p>
+        <div>Another <b>two level deep description</b></div>
+      </p>
+      <a href="foobar">Foobar</a>
+      <a href="barred">Barred</a>
+      <p>
+        <a class="foo" href="No">No (child, not sibling)</a>
+        <div>But some description</div>
+      </p>
+      <div>Some description that is not output</div>
+    </in>
+    <expected>
+      <b>two level deep description</b>
+      <div>But some description</div>
+    </expected>
+  </test>
+  <test selector='p > *:contains("description")'>
+    <in>
+      <a href="No">No (no preceding sibling)</a>
+      <p>A header</p>
+      <a class="foo" href="Yes">Yes</a>
+      <div>Some description</div>
+      <div>Another <b>two level deep description</b></div>
+      <a href="foobar">Foobar</a>
+      <a href="barred">Barred</a>
+      <p>
+        <div>Some more description</div>
+        <a class="foo" href="No">No (child, not sibling)</a>
+      </p>
+      <div>Some description that is not output</div>
+    </in>
+    <expected>
+      <div>Some more description</div>
+    </expected>
+  </test>
+  <test selector='*:contains("description")'>
+    <in>
+      <a href="No">No (no preceding sibling)</a>
+      <p>A header</p>
+      <a class="foo" href="Yes">Yes</a>
+      <div>Some description</div>
+      <div>Another <b>two level deep description</b></div>
+      <a href="foobar">Foobar</a>
+      <a href="barred">Barred</a>
+      <p>
+        <a class="foo" href="No">No (child, not sibling)</a>
+      </p>
+      <div>Some more description</div>
+    </in>
+    <expected>
+      <div>Some description</div>
+      <b>two level deep description</b>
+      <div>Some more description</div>
+    </expected>
+  </test>
+  <test selector=':empty'>
+    <in>
+      <div>Some description</div>
+      <div id="empty"></div>
+      <div>Another <b>two level deep description</b></div>
+      <div>Some more description</div>
+    </in>
+    <expected>
+      <div id="empty"></div>
+    </expected>
+  </test>
+  <test selector='div *:not(p) em'>
+    <in>
+      <div><strong><em>here</em></strong></div>
+      <div><p><em>not here</em></p></div>
+    </in>
+    <expected>
+      <em>here</em>
+    </expected>
+  </test>
+  <test selector='div em:only-child'>
+    <in>
+      <html><head></head><body>
+          <div>
+            <em>here</em>
+            <em>there</em>
+          </div>
+          <div><p><em>everywhere</em></p></div>
+      </body></html>
+    </in>
+    <expected>
+      <em>everywhere</em>
+    </expected>
+  </test>
+  <test selector='div em:nth-child(2n)'>
+    <in>
+      <html><head></head><body>
+          <div>
+            <em>here</em>
+            <em>there</em>
+            <em>everywhere</em>
+            <em>elsewhere</em>
+            <em>nowhere</em>
+          </div>
+      </body></html>
+    </in>
+    <expected>
+      <em>there</em>
+      <em>elsewhere</em>
+    </expected>
+  </test>
+  <test selector='div em:nth-child(2n+1)'>
+    <in>
+      <html><head></head><body>
+          <div>
+            <em>here</em>
+            <em>there</em>
+            <em>everywhere</em>
+            <em>elsewhere</em>
+            <em>nowhere</em>
+          </div>
+      </body></html>
+    </in>
+    <expected>
+      <em>here</em>
+      <em>everywhere</em>
+      <em>nowhere</em>
+    </expected>
+  </test>
+  <test selector='div em:nth-last-child(3n)'>
+    <in>
+      <html><head></head><body>
+          <div>
+            <em>here</em>
+            <em>there</em>
+            <em>everywhere</em>
+            <em>elsewhere</em>
+            <em>nowhere</em>
+            <em>anywhere</em>
+          </div>
+      </body></html>
+    </in>
+    <expected>
+      <em>here</em>
+      <em>elsewhere</em>
+    </expected>
+  </test>
+  <test selector='div em:nth-last-child(2n+1)'>
+    <in>
+      <html><head></head><body>
+          <div>
+            <em>anywhere</em>
+            <em>here</em>
+            <em>there</em>
+            <em>everywhere</em>
+            <em>elsewhere</em>
+            <em>nowhere</em>
+          </div>
+      </body></html>
+    </in>
+    <expected>
+      <em>here</em>
+      <em>everywhere</em>
+      <em>nowhere</em>
+    </expected>
+  </test>
+  <test selector='div.小飼弾'>
+    <in>
+      <body>
+        <div class="小飼弾">小飼弾</div>
+        <div class="bar">foo</div>
+      </body>
+    </in>
+    <expected>
+      <div class="小飼弾">小飼弾</div>
+    </expected>
+  </test>
+</tests>

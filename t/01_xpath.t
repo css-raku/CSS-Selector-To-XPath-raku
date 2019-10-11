@@ -6,12 +6,12 @@ use JSON::Fast;
 
 for 't/01_xpath.json'.IO.lines {
     next if .starts-with('//');
-    my ($css-selectors, $xpath) = @( from-json($_) );
-    if $css-selectors eq 'todo' {
+    my ($css-selector, $xpath) = @( from-json($_) );
+    if $css-selector eq 'todo' {
         todo($xpath);
     }
     else {
-        is CSS::Selector::To::XPath.to-xpath(:$css-selectors), $xpath, $css-selectors;
+        is CSS::Selector::To::XPath.to-xpath($css-selector), $xpath, $css-selector;
     }
 }
 
