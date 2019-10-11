@@ -223,15 +223,15 @@ method xpath-string(Str $_) {
     "'" ~ .subst("'", "''", :g) ~ "'";
 }
 
-method to-xpath(Str:D $css-selectors) {
-    my $obj = self;
+method selector-to-xpath($class = $?CLASS: Str:D :$css!) is export(:selector-to-xpath) {
+    my $obj = $class;
     $_ .= new without $obj;
     my $actions = (require ::('CSS::Module::CSS3::Selectors::Actions')).new;
-    if (require ::('CSS::Module::CSS3::Selectors')).parse($css-selectors, :rule<selectors>, :$actions) {
+    if (require ::('CSS::Module::CSS3::Selectors')).parse($css, :rule<selectors>, :$actions) {
         $obj.xpath($/.ast);
     }
     else {
-        fail "unable to parse CSS selector: $css-selectors";
+        fail "unable to parse CSS selector: $css";
     }
 }
 

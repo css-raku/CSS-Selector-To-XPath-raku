@@ -8,16 +8,16 @@ if $! {
 }
 
 my $tests = ::('LibXML').load: :file<t/02_html.xml>;
-my CSS::Selector::To::XPath $from-css .= new: :prefix<.>;
+my CSS::Selector::To::XPath $translator .= new: :prefix<.>;
 
 for $tests<tests/test> {
-    my Str $css-selector = .<@selector>.Str;
-    my Str $xpath = $from-css.to-xpath($css-selector);
+    my Str $css = .<@selector>.Str;
+    my Str $xpath = $translator.selector-to-xpath(:$css);
     my $in = .<in>[0];
     my $expected = .<expected>[0];
-    is($in.findnodes($xpath).Str, $expected.nonBlankChildNodes.Str, $css-selector)
+    is($in.findnodes($xpath).Str, $expected.nonBlankChildNodes.Str, "css selection: $css")
     || do {
-        diag "selector=$css-selector";
+        diag "selector=$css";
         diag "xpath:$xpath";
         diag "in:$in";
     }
