@@ -8,7 +8,8 @@ if $! {
 }
 
 my $tests = ::('LibXML').load: :file<t/02_html.xml>;
-my CSS::Selector::To::XPath $translator .= new: :prefix<.>;
+my CSS::Selector::To::XPath $translator .= new: :relative;
+ok $translator.relative, 'translator is relative';
 
 for $tests<tests/test> {
     my Str $css = .<@selector>.Str;

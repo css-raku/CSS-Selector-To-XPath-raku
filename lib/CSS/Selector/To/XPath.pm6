@@ -2,7 +2,7 @@ use v6;
 
 unit class CSS::Selector::To::XPath;
 
-has Str $.prefix = '';
+has Bool $.relative;
 
 multi method xpath(Pair $_) {
     self."xpath-{.key}"( .value );
@@ -181,6 +181,7 @@ method xpath-selectors(List $_) {
 
 method xpath-selector(@spec) {
     my @sel;
+    @sel.push('.') if $!relative;
     while (@spec) {
         my $*IS-ROOT = False;
         my $combinator = '/';
@@ -194,7 +195,7 @@ method xpath-selector(@spec) {
         @sel.push: $combinator;
         @sel.push: $xpath;
     }
-    $!prefix ~ @sel.join;
+    @sel.join;
 }
 
 method xpath-simple-selector(List $_) {
