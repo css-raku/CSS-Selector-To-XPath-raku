@@ -2,7 +2,11 @@ use v6;
 
 unit class CSS::Selector::To::XPath;
 
+use CSS::Module::CSS3::Selectors;
+subset NCName of Str is export(:NCName) where Str:U|/^<CSS::Module::CSS3::Selectors::element-name>$/;
+subset QName of Str is export(:QName) where Str:U|/^<CSS::Module::CSS3::Selectors::qname>$/;
 has Bool $.relative;
+has NCName $.prefix;
 
 multi method xpath(Pair $_) {
     self."xpath-{.key}"( .value );
@@ -60,8 +64,13 @@ method xpath-int(Int $_) {
     .Str;
 }
 
-method xpath-qname(% (:$element-name!, :$ns-prefix)) {
-    $element-name;
+method xpath-qname(% (:$element-name!, :$ns-prefix = $!prefix)) {
+    with $ns-prefix {
+        $_ ~ ':' ~ $element-name;
+    }
+    else {
+        $element-name;
+    }
 }
 
 multi method xpath-pseudo-class('checked') {
@@ -127,38 +136,60 @@ sub grok-AnB-expr(@expr) {
 
     for @expr -> $tk {
         for $tk.values {
-            when Int:D  { $v = $sign * $_; $sign = 1 }
+            when Int:D  { $v = $_  }
             when 'odd'  { $A = 2; $B = 1 }
             when 'even' { $A = 2; $B = 0 }
             when '+'    { $sign = +1 }
             when '-'    { $sign = -1 }
-            when 'n'    { $A = $v // 1; $v = Mu }
+            when 'n'    {
+                $A = ($v // 1)  * $sign;
+                $v = Nil;
+                $sign = Nil;
+            }
             default { warn "ignoring '$_' token in AnB expression"; }
         }
     }
-    $B = $_ with $v;
+    $B = ($_ * $sign) with $v;
     $A, $B;
 }
 
-sub write-AnB($A, $B is copy) {
-    $B += $A if $B < 0;
-    my $V = $A ~~ 0|1 ?? '' !! ' mod ' ~ $A;
-    "$V = $B";
+sub write-AnB($n, $A is copy, $B is copy) {
+    $A //= 0;
+    $B += abs($A) if $B < 0;
+
+    when $A == 1 {
+        "$n = $B";
+    }
+    when $A > 1 {
+        "$n mod $A = $B";
+    }
+    when $A == -1 {
+        when $B <= 0 { 'false()' }
+        when $B > 0  { "$n - $B < 0" }
+        default      { "$n == 1" }
+    }
+    when $A < -1 {
+        when (-$A) > $B { 'false()' }
+        default         { "$n * {-$A} < $B" }
+    }
+    default {
+        "$n = $B";
+    }
 }
 
 multi method _pseudo-func('nth-child', *@expr) {
     my ($a, $b) = grok-AnB-expr(@expr);
-    'count(preceding-sibling::*)' ~ write-AnB($a, $b-1) ~ ' and parent::*';
+     write-AnB('count(preceding-sibling::*)', $a, $b-1) ~ ' and parent::*';
 }
 
 multi method _pseudo-func('nth-last-child', *@expr) {
     my ($a, $b) = grok-AnB-expr(@expr);
-    'count(following-sibling::*)' ~ write-AnB($a, $b-1) ~ ' and parent::*';
+    write-AnB('count(following-sibling::*)', $a, $b-1) ~ ' and parent::*';
 }
 
 multi method _pseudo-func('nth-of-type', *@expr) {
     my ($a, $b) = grok-AnB-expr(@expr);
-    $a ?? 'position()' ~ write-AnB($a, $b) !! $b;
+    $a ?? write-AnB('position()', $a, $b) !! $b;
 }
 
 multi method _pseudo-func('not', $expr) {
@@ -228,7 +259,7 @@ method selector-to-xpath($class = $?CLASS: Str:D :$css!) is export(:selector-to-
     my $obj = $class;
     $_ .= new without $obj;
     my $actions = (require ::('CSS::Module::CSS3::Selectors::Actions')).new;
-    if (require ::('CSS::Module::CSS3::Selectors')).parse($css, :rule<selectors>, :$actions) {
+    if CSS::Module::CSS3::Selectors.parse($css, :rule<selectors>, :$actions) {
         $obj.xpath($/.ast);
     }
     else {
