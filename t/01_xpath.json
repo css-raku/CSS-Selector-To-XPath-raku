@@ -92,4 +92,4 @@
 // A few tests from the CSS::Modules::CSS3::Selector test suite
 ["foo|h1",                      "//foo:h1"]
 ["*|h1",                        "//*:h1"]
-["tr:nth-child( -n+ 6 )",       "//tr[count(preceding-sibling::*) - 5 < 0 and parent::*]"]
+["tr:nth-child( -n+ 6 )",       "//tr[count(preceding-sibling::*) < 5 and parent::*]"]

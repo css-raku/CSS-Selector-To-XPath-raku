@@ -164,8 +164,8 @@ sub write-AnB($n, $A is copy, $B is copy) {
         "$n mod $A = $B";
     }
     when $A == -1 {
-        when $B <= 0 { 'false()' }
-        when $B > 0  { "$n - $B < 0" }
+        when $B < 1  { 'false()' }
+        when $B >= 1 { "$n < $B" }
         default      { "$n == 1" }
     }
     when $A < -1 {
