@@ -258,7 +258,7 @@ method xpath-string(Str $_) {
 method selector-to-xpath($class = $?CLASS: Str:D :$css!) is export(:selector-to-xpath) {
     my $obj = $class;
     $_ .= new without $obj;
-    my $actions = (require ::('CSS::Module::CSS3::Selectors::Actions')).new;
+    my $actions = (require ::('CSS::Module::CSS3::Selectors::Actions')).new: :xml;
     if CSS::Module::CSS3::Selectors.parse($css, :rule<selectors>, :$actions) {
         $obj.xpath($/.ast);
     }

@@ -3,7 +3,7 @@
     "license"     : "Artistic-2.0",
     "version"     : "0.0.1",
     "description" : "CSS Selector to XPath converter",
-    "depends"     : [ "CSS::Module::CSS3::Selectors", "JSON::Fast" ],
+    "depends"     : [ "CSS::Grammar:ver(v0.3.3+)", "CSS::Module::CSS3::Selectors", "JSON::Fast" ],
     "source-url"  : "git://github.com/p6-css/CSS-Selector-To-XPath-raku.git",
     "provides"    : {
         "CSS::Selector::To::XPath" : "lib/CSS/Selector/To/XPath.pm6"

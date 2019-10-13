@@ -2,7 +2,9 @@ use v6;
 use Test;
 use CSS::Selector::To::XPath;
 try require LibXML;
+
 if $! {
+    plan 1;
     skip-rest("LibXML is required to run these tests");
     exit 0;
 }
