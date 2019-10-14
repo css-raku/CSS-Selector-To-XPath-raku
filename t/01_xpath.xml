@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<tests>
+  <test css="*" xpath="//*"/>
+  <test css="e" xpath="//e"/>
+  <test css="e f" xpath="//e//f"/>
+  <test css="e &gt; f" xpath="//e/f"/>
+  <test css="e, f" xpath="//e | //f"/>
+  <test css="p.pastoral.marine" xpath="//p[contains(concat(' ', normalize-space(@class), ' '), ' pastoral ')][contains(concat(' ', normalize-space(@class), ' '), ' marine ')]"/>
+  <test css="e:first-child" xpath="//e[count(preceding-sibling::*) = 0 and parent::*]"/>
+  <test css="f &gt; e:first-child" xpath="//f/e[count(preceding-sibling::*) = 0 and parent::*]"/>
+  <test css="e:lang(en)" xpath="//e[@xml:lang='en' or starts-with(@xml:lang, 'en-')]"/>
+  <test css="e + f" xpath="//e/following-sibling::*[1]/self::f"/>
+  <test css="e + #bar" xpath="//e/following-sibling::*[1]/self::*[@id='bar']"/>
+  <test css="e + .bar" xpath="//e/following-sibling::*[1]/self::*[contains(concat(' ', normalize-space(@class), ' '), ' bar ')]"/>
+  <test css="e[foo]" xpath="//e[@foo]"/>
+  <test css="e[foo=warning]" xpath="//e[@foo='warning']"/>
+  <test css="e[foo=&quot;warning&quot;]" xpath="//e[@foo='warning']"/>
+  <test css="e[foo~=&quot;warning&quot;]" xpath="//e[contains(concat(' ', @foo, ' '), ' warning ')]"/>
+  <test css="e[foo^=&quot;warning&quot;]" xpath="//e[starts-with(@foo, 'warning')]"/>
+  <test css="e:not([foo^=&quot;warning&quot;])" xpath="//e[not(starts-with(@foo, 'warning'))]"/>
+  <test css="e[foo$=&quot;warning&quot;]" xpath="//e[substring(@foo, string-length(@foo)-6)='warning']"/>
+  <test css="E[lang|=&quot;en&quot;]" xpath="//E[@lang='en' or starts-with(@lang, 'en-')]"/>
+  <test css="DIV.warning" xpath="//DIV[contains(concat(' ', normalize-space(@class), ' '), ' warning ')]"/>
+  <test css="E#myid" xpath="//E[@id='myid']"/>
+  <test css="p:not(#me)" xpath="//p[not(@id='me')]"/>
+  <test css="foo.bar, bar" xpath="//foo[contains(concat(' ', normalize-space(@class), ' '), ' bar ')] | //bar"/>
+  <test css="E:nth-child(1)" xpath="//E[count(preceding-sibling::*) = 0 and parent::*]"/>
+  <test css="E:last-child" xpath="//E[count(following-sibling::*) = 0 and parent::*]"/>
+  <test css="F E:last-child" xpath="//F//E[count(following-sibling::*) = 0 and parent::*]"/>
+  <test css="F &gt; E:last-child" xpath="//F/E[count(following-sibling::*) = 0 and parent::*]"/>
+  <test css="E[href*=&quot;bar&quot;]" xpath="//E[contains(@href, 'bar')]"/>
+  <test css="E[href*=bar]" xpath="//E[contains(@href, 'bar')]"/>
+  <test css="E:not([href*=&quot;bar&quot;])" xpath="//E[not(contains(@href, 'bar'))]"/>
+  <test css="F &gt; E:nth-of-type(3)" xpath="//F/E[3]"/>
+  <test css="e ~ f" xpath="//e/following-sibling::f"/>
+  <test css="e ~ f.foo" xpath="//e/following-sibling::f[contains(concat(' ', normalize-space(@class), ' '), ' foo ')]"/>
+  <test css="E:contains(&quot;Hello&quot;)" xpath="//E[text()[contains(string(.), 'Hello')]]"/>
+  <test css="E:contains( &quot;Hello&quot; ) .C" xpath="//E[text()[contains(string(.), 'Hello')]]//*[contains(concat(' ', normalize-space(@class), ' '), ' C ')]"/>
+  <test css="F, E:contains( &quot;Hello&quot; )" xpath="//F | //E[text()[contains(string(.), 'Hello')]]"/>
+  <test css="E:contains( &quot;Hello&quot; ), F" xpath="//E[text()[contains(string(.), 'Hello')]] | //F"/>
+  <test css="E ~ #bar" xpath="//E/following-sibling::*[@id='bar']"/>
+  <test css="E ~ .bar" xpath="//E/following-sibling::*[contains(concat(' ', normalize-space(@class), ' '), ' bar ')]"/>
+  <test css="E ~ *" xpath="//E/following-sibling::*"/>
+  <test css=".foo ~ E" xpath="//*[contains(concat(' ', normalize-space(@class), ' '), ' foo ')]/following-sibling::E"/>
+  <test css=".foo ~ *" xpath="//*[contains(concat(' ', normalize-space(@class), ' '), ' foo ')]/following-sibling::*"/>
+  <test css=".foo ~ .bar" xpath="//*[contains(concat(' ', normalize-space(@class), ' '), ' foo ')]/following-sibling::*[contains(concat(' ', normalize-space(@class), ' '), ' bar ')]"/>
+  <test css="todo" xpath="is this a valid selector?"/>
+  <test css="&gt; em" xpath="//*/em"/>
+  <test css=":first-child" xpath="//*[count(preceding-sibling::*) = 0 and parent::*]"/>
+  <test css=":last-child" xpath="//*[count(following-sibling::*) = 0 and parent::*]"/>
+  <test css="E.c:first-child" xpath="//E[contains(concat(' ', normalize-space(@class), ' '), ' c ')][count(preceding-sibling::*) = 0 and parent::*]"/>
+  <test css="E:first-child.c" xpath="//E[count(preceding-sibling::*) = 0 and parent::*][contains(concat(' ', normalize-space(@class), ' '), ' c ')]"/>
+  <test css="E#i:first-child" xpath="//E[@id='i'][count(preceding-sibling::*) = 0 and parent::*]"/>
+  <test css="E:first-child#i" xpath="//E[count(preceding-sibling::*) = 0 and parent::*][@id='i']"/>
+  <test css=":lang(c)" xpath="//*[@xml:lang='c' or starts-with(@xml:lang, 'c-')]"/>
+  <test css=":lang(c)#i" xpath="//*[@xml:lang='c' or starts-with(@xml:lang, 'c-')][@id='i']"/>
+  <test css="#i:lang(c)" xpath="//*[@id='i'][@xml:lang='c' or starts-with(@xml:lang, 'c-')]"/>
+  <test css="E:lang(c)#i" xpath="//E[@xml:lang='c' or starts-with(@xml:lang, 'c-')][@id='i']"/>
+  <test css="E#i:lang(c)" xpath="//E[@id='i'][@xml:lang='c' or starts-with(@xml:lang, 'c-')]"/>
+  <test css="*:lang(c)#i:first-child" xpath="//*[@xml:lang='c' or starts-with(@xml:lang, 'c-')][@id='i'][count(preceding-sibling::*) = 0 and parent::*]"/>
+  <test css="E:lang(c):first-child#i" xpath="//E[@xml:lang='c' or starts-with(@xml:lang, 'c-')][count(preceding-sibling::*) = 0 and parent::*][@id='i']"/>
+  <test css="E#i:lang(c):first-child" xpath="//E[@id='i'][@xml:lang='c' or starts-with(@xml:lang, 'c-')][count(preceding-sibling::*) = 0 and parent::*]"/>
+  <test css="#bar" xpath="//*[@id='bar']"/>
+  <test css="*[foo]" xpath="//*[@foo]"/>
+  <test css="[foo]" xpath="//*[@foo]"/>
+  <test css=".warning" xpath="//*[contains(concat(' ', normalize-space(@class), ' '), ' warning ')]"/>
+  <test css=":nth-child(1)" xpath="//*[count(preceding-sibling::*) = 0 and parent::*]"/>
+  <test css="E:nth-child(2)" xpath="//E[count(preceding-sibling::*) = 1 and parent::*]"/>
+  <test css="E:nth-child(even)" xpath="//E[count(preceding-sibling::*) mod 2 = 1 and parent::*]"/>
+  <test css="E:nth-child(2n)" xpath="//E[count(preceding-sibling::*) mod 2 = 1 and parent::*]"/>
+  <test css="E:nth-child(2n+1)" xpath="//E[count(preceding-sibling::*) mod 2 = 0 and parent::*]"/>
+  <test css="E:nth-child(odd)" xpath="//E[count(preceding-sibling::*) mod 2 = 0 and parent::*]"/>
+  <test css=":root" xpath="/*"/>
+  <test css="E:root" xpath="/E"/>
+  <test css="E:empty" xpath="//E[not(* or text())]"/>
+  <test css=":empty" xpath="//*[not(* or text())]"/>
+  <test css="p , :root" xpath="//p | /*"/>
+  <test css="p , q" xpath="//p | //q"/>
+  <test css="div *:not(p) em" xpath="//div//*[not(self::p)]//em"/>
+  <test css="a:not(.external)[href]" xpath="//a[not(contains(concat(' ', normalize-space(@class), ' '), ' external '))][@href]"/>
+  <test css="div em:only-child" xpath="//div//em[count(preceding-sibling::*) = 0 and count(following-sibling::*) = 0 and parent::*]"/>
+  <test css="[x=abc]" xpath="//*[@x='abc']"/>
+  <test css="[x=a-bc]" xpath="//*[@x='a-bc']"/>
+  <test css="[x=abc-]" xpath="//*[@x='abc-']"/>
+  <test css="[x=ab--c]" xpath="//*[@x='ab--c']"/>
+  <test css="option:not([value=&quot;&quot;])" xpath="//option[not(@value='')]"/>
+  <test css="option[ value=&quot;&quot; ]" xpath="//option[@value='']"/>
+  <test css="tr:not([class=&quot;wanted&quot;])" xpath="//tr[not(@class='wanted')]"/>
+  <test css="form[name='foo']" xpath="//form[@name='foo']"/>
+  <test css="E:last-of-type" xpath="//E[last()]"/>
+  <test css="E:disabled" xpath="//E[@disabled]"/>
+  <test css="E:selected" xpath="//E[@selected]"/>
+  <test css="E:checked" xpath="//E[@checked]"/>
+  <test css="foo|h1" xpath="//foo:h1"/>
+  <test css="*|h1" xpath="//*:h1"/>
+  <test css="tr:nth-child( -n+ 6 )" xpath="//tr[count(preceding-sibling::*) &lt; 5 and parent::*]"/>
+</tests>
