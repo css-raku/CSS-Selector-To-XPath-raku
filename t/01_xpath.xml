@@ -32,6 +32,8 @@
   <test css="E[href*=bar]" xpath="//E[contains(@href, 'bar')]"/>
   <test css="E:not([href*=&quot;bar&quot;])" xpath="//E[not(contains(@href, 'bar'))]"/>
   <test css="F &gt; E:nth-of-type(3)" xpath="//F/E[3]"/>
+  <test css="F &gt; E:nth-last-of-type(3)" xpath="//F/E[count() - 2]"/>
+  <test css="F &gt; E:only-of-type" xpath="//F/E[count() = 1]"/>
   <test css="e ~ f" xpath="//e/following-sibling::f"/>
   <test css="e ~ f.foo" xpath="//e/following-sibling::f[contains(concat(' ', normalize-space(@class), ' '), ' foo ')]"/>
   <test css="E:contains(&quot;Hello&quot;)" xpath="//E[text()[contains(string(.), 'Hello')]]"/>

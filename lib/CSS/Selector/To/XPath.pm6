@@ -42,8 +42,6 @@ multi method _attrib-expr(%name) {
     '@' ~ $.xpath(%name)
 }
 
-multi method _attrib-expr(|c) { die c.perl }
-
 multi method xpath-attrib(List $_) {
     $._attrib-expr(|$_);
 }
@@ -103,6 +101,10 @@ multi method xpath-pseudo-class('last-of-type') {
 
 multi method xpath-pseudo-class('only-child') {
     'count(preceding-sibling::*) = 0 and count(following-sibling::*) = 0 and parent::*'
+}
+
+multi method xpath-pseudo-class('only-of-type') {
+    'count() = 1';
 }
 
 multi method xpath-pseudo-class('root') {
@@ -190,6 +192,11 @@ multi method _pseudo-func('nth-last-child', *@expr) {
 multi method _pseudo-func('nth-of-type', *@expr) {
     my ($a, $b) = grok-AnB-expr(@expr);
     $a ?? write-AnB('position()', $a, $b) !! $b;
+}
+
+multi method _pseudo-func('nth-last-of-type', *@expr) {
+    my ($a, $b) = grok-AnB-expr(@expr);
+    $a ?? write-AnB('count() - position()', $a, $b-1) !! 'count() - ' ~ ($b - 1);
 }
 
 multi method _pseudo-func('not', $expr) {
