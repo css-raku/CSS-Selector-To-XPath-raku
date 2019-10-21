@@ -80,7 +80,7 @@ multi method xpath-pseudo-class('disabled') {
 }
 
 multi method xpath-pseudo-class('empty') {
-    'not(* or text())';
+    'not(node())';
 }
 
 multi method xpath-pseudo-class('first-child') {
@@ -108,8 +108,7 @@ multi method xpath-pseudo-class('only-of-type') {
 }
 
 multi method xpath-pseudo-class('root') {
-    $*IS-ROOT = True;
-    Mu;
+    'not(parent::*)'
 }
 
 multi method xpath-pseudo-class('selected') {
@@ -121,12 +120,12 @@ multi method xpath-pseudo-class($_) is default {
 }
 
 multi method _pseudo-func('lang', % (:$ident )) {
-    qq<@xml:lang='{$ident}' or starts-with(@xml:lang, '{$ident}-')>
+    qq<lang(., {$ident})>;
 }
 
 multi method _pseudo-func('contains', %val) {
     my $s = %val<ident> // %val<string>;
-    qq<text()[contains(string(.), {$.xpath-string($s)})]>;
+    qq<text()[contains(., {$.xpath-string($s)})]>;
 }
 
 sub grok-AnB-expr(@expr) {
@@ -155,28 +154,21 @@ sub grok-AnB-expr(@expr) {
     $A, $B;
 }
 
-sub write-AnB($n, $A is copy, $B is copy) {
-    $A //= 0;
-    $B += abs($A) if $B < 0;
+sub write-AnB($n, Int $A is copy, Int $B is copy) {
+    $A ||= 0;
+    if $A > 0 {
+        $B += $A while $B < 0;
+    }
 
-    when $A == 1 {
-        "$n = $B";
+    when $A == 0  { "$n = $B" }
+    when $A == 1  { "$n > $B" }
+    when $A >  1  {
+        given "$n mod $A = $B" {
+            $B > 1 ?? "$_ and $n >= $B" !! $_;
+        }
     }
-    when $A > 1 {
-        "$n mod $A = $B";
-    }
-    when $A == -1 {
-        when $B < 1  { 'false()' }
-        when $B >= 1 { "$n < $B" }
-        default      { "$n == 1" }
-    }
-    when $A < -1 {
-        when (-$A) > $B { 'false()' }
-        default         { "$n * {-$A} < $B" }
-    }
-    default {
-        "$n = $B";
-    }
+    when $A == -1 { "$n <= $B" }
+    when $A <  -1 { "$n * {-$A} <= $B" }
 }
 
 multi method _pseudo-func('nth-child', *@expr) {
@@ -221,15 +213,13 @@ method xpath-selector(@spec) {
     my @sel;
     @sel.push('.') if $!relative;
     while (@spec) {
-        my $*IS-ROOT = False;
         my $combinator = '/';
         with @spec.head<op> {
             @spec.shift;
             $combinator = $.xpath-combinator($_);
         }
         my $xpath = $.xpath(@spec.shift);
-        @sel.push: '/'
-            unless $*IS-ROOT;
+        @sel.push: '/';
         @sel.push: $combinator;
         @sel.push: $xpath;
     }
@@ -246,15 +236,7 @@ method xpath-simple-selector(List $_) {
         '*';
     }
 
-    my @selections = @l.map({
-        with $.xpath($_) {
-            '[' ~ $_ ~ ']'
-        }
-        else {
-            ''
-        }
-    }).join;
-
+    my @selections = @l.map: { '[' ~ $.xpath($_) ~ ']' };
    $elem ~ @selections.join;
 }
 
