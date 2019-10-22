@@ -140,12 +140,12 @@ sub grok-AnB-expr(@expr) {
             when Int:D  { $v = $_  }
             when 'odd'  { $A = 2; $B = 1 }
             when 'even' { $A = 2; $B = 0 }
-            when '+'    { $sign = +1 }
-            when '-'    { $sign = -1 }
+            when '+'    { }
+            when '-'    { $sign *= -1 }
             when 'n'    {
                 $A = ($v // 1)  * $sign;
                 $v = Nil;
-                $sign = Nil;
+                $sign = 1;
             }
             default { warn "ignoring '$_' token in AnB expression"; }
         }
@@ -244,9 +244,9 @@ method xpath-string(Str $_) {
     "'" ~ .subst("'", "''", :g) ~ "'";
 }
 
-method selector-to-xpath($class = $?CLASS: Str:D :$css!) is export(:selector-to-xpath) {
+method selector-to-xpath($class = $?CLASS: Str:D :$css!, |c) is export(:selector-to-xpath) {
     my $obj = $class;
-    $_ .= new without $obj;
+    $_ .= new(|c) without $obj;
     my $actions = (require ::('CSS::Module::CSS3::Selectors::Actions')).new: :xml;
     if CSS::Module::CSS3::Selectors.parse($css, :rule<selectors>, :$actions) {
         $obj.xpath($/.ast);
@@ -256,4 +256,194 @@ method selector-to-xpath($class = $?CLASS: Str:D :$css!) is export(:selector-to-
     }
 }
 
+=begin pod
 
+=head1 NAME
+
+CSS::Selector::To::XPath - Raku CSS Selector to XPath compiler
+
+=head1 SYNOPSIS
+
+  use CSS::Selector::To::XPath;
+  given CSS::Selector::To::XPath.new {
+      say .selector-to-xpath(:css<li#main">); # //li[@id='main']
+  }
+
+  # functional interface
+  use CSS::Selector::To::XPath :selector-to-xpath;
+  use HTML::Selector::XPath 'selector_to_xpath';
+  my $xpath = selector-to-xpath('div.foo');
+
+  my $relative = selector-to-xpath('div.foo', :relative );
+  # ./div[contains(concat(' ', @class, ' '), ' foo ')]
+
+  my $ns = selector-to-xpath('div.foo', :prefix<xhtml> );
+  # xhtml:div[contains(concat(' ', @class, ' '), ' foo ')]
+
+=head1 DESCRIPTION
+
+CSS::Selector::To::XPath is a utility function to compile full set of
+CSS2 and partial CSS3 selectors to the equivalent XPath expression.
+
+=head1 FUNCTIONS and METHODS
+
+=begin item
+selector-to-xpath
+
+  $xpath = selector-to-xpath(:$css, |%opt);
+
+Shortcut for C<< CSS::Selector::To::XPath.new(|%opt).to-xpath(:$css) >>. Exported upon request.
+=end item
+
+=begin item
+new
+
+  $sel = CSS::Selector::To::XPath.new(:$prefix, :relative);
+
+Creates a new object.
+=end item
+
+=head1 Mini Tutorial on CSS Selectors
+
+=head2 Expressions
+
+Selectors can match elements using any of the following criteria:
+
+=item C<name> – Match an element based on its name (tag name). For example, p to match a paragraph. You can use C<*> to match any element.
+
+=item C<#id> – Match an element based on its identifier (the id attribute). For example, C<#page>.
+
+=item C<.class> – Match an element based on its class name, all class names if more than one specified.
+
+=item C<[attr]> – Match an element that has the specified attribute.
+
+=item C<[attr=value]> – Match an element that has the specified attribute and value. (More operators are supported see below)
+
+=item C<:pseudo-class> – Match an element based on a pseudo class, such as C<:empty>.
+
+=item C<:pseudo-function(arg)> – Match an element based on a pseudo class, such as C<:nth-child(2n+1)>.
+
+=item C<:not(expr)> – Match an element that does not match the negation expression.
+
+When using a combination of the above, the element name comes first followed by identifier, class names, attributes, pseudo classes and negation in any order. Do not separate these parts with spaces! Space separation is used for descendant selectors.
+
+For example:
+
+C<form.login[action=/login]>
+
+The matched element must be of type form and have the class login. It may have other classes, but the class login is required to match. It must also have an attribute called action with the value /login.
+
+This selector will match the following element:
+
+C<<form class="login form" method="post" action="/login">>
+
+but will not match the element:
+
+C<<form method="post" action="/logout">>
+
+=head2 Attribute Values
+
+Several operators are supported for matching attributes:
+
+=item C<name> – The element must have an attribute with that name.
+
+=item C<name=value> – The element must have an attribute with that name and value.
+
+=item C<name^=value> – The attribute value must start with the specified value.
+
+=item C<name$=value> – The attribute value must end with the specified value.
+
+=item C<name*=value> – The attribute value must contain the specified value.
+
+=item C<name~=word> – The attribute value must contain the specified word (space separated).
+
+=item C<name|=word> – The attribute value must start with specified word.
+
+For example, the following two selectors match the same element:
+
+C<#my_id>
+C<[id=my_id]>
+
+and so do the following two selectors:
+
+C<.my_class>
+C<[class~=my_class]>
+ 
+=head2 Alternatives, siblings, children
+
+Complex selectors use a combination of expressions to match elements:
+
+=item C<expr1 expr2> – Match any element against the second expression if it has some ancestor element that matches the first expression.
+
+=item C«expr1 > expr2» – Match any element against the second expression if it is the immediate child of an element that matches the first expression.
+
+=item C<expr1 + expr2> – Match any element against the second expression if it immediately follows an element that matches the first expression.
+
+=item C<expr1 ~ expr2> – Match any element against the second expression that comes after an element that matches the first expression.
+
+=item C<expr1, expr2> – Match any element against the first expression, or against the second expression.
+
+Since children and sibling selectors may match more than one element given the first element, the #match method may return more than one match.
+
+=head2 Pseudo classes
+Pseudo classes were introduced in CSS 3. They are most often used to select elements in a given position:
+
+=item C<:root> – Match the element only if it is the root element (no parent element).
+
+=item C<:empty> – Match the element only if it has no child elements, and no text content.
+
+=item C<:only-child> – Match the element if it is the only child (element) of its parent element.
+
+=item C<:only-of-type> – Match the element if it is the only child (element) of its parent element and its type.
+
+=item C<:first-child> – Match the element if it is the first child (element) of its parent element.
+
+=item C<:first-of-type> – Match the element if it is the first child (element) of its parent element of its type.
+
+=item C<:last-child> – Match the element if it is the last child (element) of its parent element.
+
+=item C<:last-of-type> – Match the element if it is the last child (element) of its parent element of its type.
+
+=head2 Pseudo functions
+
+=item C<:content(string)> – Match the element only if it has string as its text content (ignoring leading and trailing whitespace).
+
+=item C<:nth-child(b)> – Match the element if it is the b-th child (element) of its parent element. The value b specifies its index, starting with 1.
+
+=item C<:nth-child(an+b)> – Match the element if it is the b-th child (element) in each group of a child elements of its parent element.
+
+=item C<:nth-child(-an+b)> – Match the element if it is the first child (element) in each group of a child elements, up to the first b child elements of its parent element.
+
+=item C<:nth-child(even)> – Match element in the even position (i.e. second, fourth). Same as C<:nth-child(2n)>.
+
+=item C<:nth-child(odd)> – Match element in the odd position (i.e. first, third). Same as C<:nth-child(2n+1)>.
+
+=item C<:nth-of-type(..)> – As above, but only counts elements of its type.
+
+=item C<:nth-last-child(..)> – As above, but counts from the last child.
+
+=item C<:nth-last-of-type(..)> – As above, but counts from the last child and only elements of its type.
+
+=item C<:not(selector)> – Match the element only if the element does not match the simple selector.
+
+For example:
+
+C<table tr:nth-child(odd)>
+Selects every second row in the table starting with the first one.
+
+C<div p:nth-child(4)>
+Selects the fourth paragraph in the div, but not if the div contains other elements, since those are also counted.
+
+C<div p:nth-of-type(4)>
+Selects the fourth paragraph in the div, counting only paragraphs, and ignoring all other elements.
+
+C<div p:nth-of-type(-n+4)>
+Selects the first four paragraphs, ignoring all others.
+
+And you can always select an element that matches one set of rules but not another using :not. For example:
+
+C<p:not(.post)>
+ Matches all paragraphs that do not have the class .post.
+
+=end pod
+ 
