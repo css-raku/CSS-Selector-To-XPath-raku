@@ -249,8 +249,6 @@ method selector-to-xpath($class = $?CLASS: Str:D :$css!, |c) is export(:selector
     $_ .= new(|c) without $obj;
     my $actions = (require ::('CSS::Module::CSS3::Selectors::Actions')).new: :xml;
     if CSS::Module::CSS3::Selectors.parse($css, :rule<selectors>, :$actions) {
-        warn $css;
-        warn $/.ast.perl;
         $obj.xpath($/.ast);
     }
     else {
