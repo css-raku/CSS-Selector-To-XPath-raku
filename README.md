@@ -35,13 +35,25 @@ FUNCTIONS and METHODS
 
         $xpath = selector-to-xpath(:$css, |%opt);
 
-    Shortcut for `CSS::Selector::To::XPath.new(|%opt).to-xpath(:$css) `. Exported upon request.
+    Shortcut for `CSS::Selector::To::XPath.new(|%opt).to-xpath(:$css) `. Parses the CSS selector expression and returns an equivalent XPath exppression.Exported upon request.
 
   * new
 
         $sel = CSS::Selector::To::XPath.new(:$prefix, :relative);
 
     Creates a new object.
+
+  * xpath
+
+        my $actions = CSS::Module::CSS3::Selectors::Actions.new: :xml;
+        CSS::Module::CSS3::Selectors.parse('e[foo]', :rule<selectors>, :$actions;
+        my $ast = $/.ast;
+        say CSS::Selector::To::XPath.xpath($ast); # //e[@foo]
+
+        $ast = :attrib[{:ident("foo")},];
+        say CSS::Selector::To::XPath.xpath($ast); # @foo
+
+    This is a more advanced method that bypasses parsing of CSS selector expressions. Instead it constructs XPath expressions directly from AST trees, as produced by the CSS::Module::CSS3::Selectors parser.
 
 Mini Tutorial on CSS Selectors
 ==============================

@@ -249,6 +249,8 @@ method selector-to-xpath($class = $?CLASS: Str:D :$css!, |c) is export(:selector
     $_ .= new(|c) without $obj;
     my $actions = (require ::('CSS::Module::CSS3::Selectors::Actions')).new: :xml;
     if CSS::Module::CSS3::Selectors.parse($css, :rule<selectors>, :$actions) {
+        warn $css;
+        warn $/.ast.perl;
         $obj.xpath($/.ast);
     }
     else {
@@ -291,7 +293,8 @@ selector-to-xpath
 
   $xpath = selector-to-xpath(:$css, |%opt);
 
-Shortcut for C<< CSS::Selector::To::XPath.new(|%opt).to-xpath(:$css) >>. Exported upon request.
+Shortcut for C<< CSS::Selector::To::XPath.new(|%opt).to-xpath(:$css) >>. Parses the CSS selector expression and returns
+an equivalent XPath exppression.Exported upon request.
 =end item
 
 =begin item
@@ -300,6 +303,22 @@ new
   $sel = CSS::Selector::To::XPath.new(:$prefix, :relative);
 
 Creates a new object.
+=end item
+
+=begin item
+xpath
+
+    my $actions = CSS::Module::CSS3::Selectors::Actions.new: :xml;
+    CSS::Module::CSS3::Selectors.parse('e[foo]', :rule<selectors>, :$actions;
+    my $ast = $/.ast;
+    say CSS::Selector::To::XPath.xpath($ast); # //e[@foo]
+
+    $ast = :attrib[{:ident("foo")},];
+    say CSS::Selector::To::XPath.xpath($ast); # @foo
+
+This is a more advanced method that bypasses parsing of CSS selector expressions. Instead it constructs XPath expressions directly from AST trees,
+as produced by the CSS::Module::CSS3::Selectors parser.
+
 =end item
 
 =head1 Mini Tutorial on CSS Selectors
