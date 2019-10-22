@@ -1,0 +1,186 @@
+[![Build Status](https://travis-ci.org/p6-css/CSS-Selector-To-XPath-raku.svg?branch=master)](https://travis-ci.org/p6-css/CSS-Selector-To-XPath-raku)
+
+NAME
+====
+
+CSS::Selector::To::XPath - Raku CSS Selector to XPath compiler
+
+SYNOPSIS
+========
+
+    use CSS::Selector::To::XPath;
+    given CSS::Selector::To::XPath.new {
+        say .selector-to-xpath(:css<li#main">); # //li[@id='main']
+    }
+
+    # functional interface
+    use CSS::Selector::To::XPath :selector-to-xpath;
+    use HTML::Selector::XPath 'selector_to_xpath';
+    my $xpath = selector-to-xpath('div.foo');
+
+    my $relative = selector-to-xpath('div.foo', :relative );
+    # ./div[contains(concat(' ', @class, ' '), ' foo ')]
+
+    my $ns = selector-to-xpath('div.foo', :prefix<xhtml> );
+    # xhtml:div[contains(concat(' ', @class, ' '), ' foo ')]
+
+DESCRIPTION
+===========
+
+CSS::Selector::To::XPath is a utility function to compile full set of CSS2 and partial CSS3 selectors to the equivalent XPath expression.
+
+FUNCTIONS and METHODS
+=====================
+
+  * selector-to-xpath
+
+        $xpath = selector-to-xpath(:$css, |%opt);
+
+    Shortcut for `CSS::Selector::To::XPath.new(|%opt).to-xpath(:$css) `. Exported upon request.
+
+  * new
+
+        $sel = CSS::Selector::To::XPath.new(:$prefix, :relative);
+
+    Creates a new object.
+
+Mini Tutorial on CSS Selectors
+==============================
+
+Expressions
+-----------
+
+Selectors can match elements using any of the following criteria:
+
+  * `name` – Match an element based on its name (tag name). For example, p to match a paragraph. You can use `*` to match any element.
+
+  * `#id` – Match an element based on its identifier (the id attribute). For example, `#page`.
+
+  * `.class` – Match an element based on its class name, all class names if more than one specified.
+
+  * `[attr]` – Match an element that has the specified attribute.
+
+  * `[attr=value]` – Match an element that has the specified attribute and value. (More operators are supported see below)
+
+  * `:pseudo-class` – Match an element based on a pseudo class, such as `:empty`.
+
+  * `:pseudo-function(arg)` – Match an element based on a pseudo class, such as `:nth-child(2n+1)`.
+
+  * `:not(expr)` – Match an element that does not match the negation expression.
+
+When using a combination of the above, the element name comes first followed by identifier, class names, attributes, pseudo classes and negation in any order. Do not separate these parts with spaces! Space separation is used for descendant selectors.
+
+For example:
+
+`form.login[action=/login]`
+
+The matched element must be of type form and have the class login. It may have other classes, but the class login is required to match. It must also have an attribute called action with the value /login.
+
+This selector will match the following element:
+
+`form class="login form" method="post" action="/login"`
+
+but will not match the element:
+
+`form method="post" action="/logout"`
+
+Attribute Values
+----------------
+
+Several operators are supported for matching attributes:
+
+  * `name` – The element must have an attribute with that name.
+
+  * `name=value` – The element must have an attribute with that name and value.
+
+  * `name^=value` – The attribute value must start with the specified value.
+
+  * `name$=value` – The attribute value must end with the specified value.
+
+  * `name*=value` – The attribute value must contain the specified value.
+
+  * `name~=word` – The attribute value must contain the specified word (space separated).
+
+  * `name|=word` – The attribute value must start with specified word.
+
+For example, the following two selectors match the same element:
+
+`#my_id` `[id=my_id]`
+
+and so do the following two selectors:
+
+`.my_class` `[class~=my_class]`
+
+Alternatives, siblings, children
+--------------------------------
+
+Complex selectors use a combination of expressions to match elements:
+
+  * `expr1 expr2` – Match any element against the second expression if it has some ancestor element that matches the first expression.
+
+  * `expr1 > expr2` – Match any element against the second expression if it is the immediate child of an element that matches the first expression.
+
+  * `expr1 + expr2` – Match any element against the second expression if it immediately follows an element that matches the first expression.
+
+  * `expr1 ~ expr2` – Match any element against the second expression that comes after an element that matches the first expression.
+
+  * `expr1, expr2` – Match any element against the first expression, or against the second expression.
+
+Since children and sibling selectors may match more than one element given the first element, the #match method may return more than one match.
+
+Pseudo classes Pseudo classes were introduced in CSS 3. They are most often used to select elements in a given position:
+------------------------------------------------------------------------------------------------------------------------
+
+  * `:root` – Match the element only if it is the root element (no parent element).
+
+  * `:empty` – Match the element only if it has no child elements, and no text content.
+
+  * `:only-child` – Match the element if it is the only child (element) of its parent element.
+
+  * `:only-of-type` – Match the element if it is the only child (element) of its parent element and its type.
+
+  * `:first-child` – Match the element if it is the first child (element) of its parent element.
+
+  * `:first-of-type` – Match the element if it is the first child (element) of its parent element of its type.
+
+  * `:last-child` – Match the element if it is the last child (element) of its parent element.
+
+  * `:last-of-type` – Match the element if it is the last child (element) of its parent element of its type.
+
+Pseudo functions
+----------------
+
+  * `:content(string)` – Match the element only if it has string as its text content (ignoring leading and trailing whitespace).
+
+  * `:nth-child(b)` – Match the element if it is the b-th child (element) of its parent element. The value b specifies its index, starting with 1.
+
+  * `:nth-child(an+b)` – Match the element if it is the b-th child (element) in each group of a child elements of its parent element.
+
+  * `:nth-child(-an+b)` – Match the element if it is the first child (element) in each group of a child elements, up to the first b child elements of its parent element.
+
+  * `:nth-child(even)` – Match element in the even position (i.e. second, fourth). Same as `:nth-child(2n)`.
+
+  * `:nth-child(odd)` – Match element in the odd position (i.e. first, third). Same as `:nth-child(2n+1)`.
+
+  * `:nth-of-type(..)` – As above, but only counts elements of its type.
+
+  * `:nth-last-child(..)` – As above, but counts from the last child.
+
+  * `:nth-last-of-type(..)` – As above, but counts from the last child and only elements of its type.
+
+  * `:not(selector)` – Match the element only if the element does not match the simple selector.
+
+For example:
+
+`table tr:nth-child(odd)` Selects every second row in the table starting with the first one.
+
+`div p:nth-child(4)` Selects the fourth paragraph in the div, but not if the div contains other elements, since those are also counted.
+
+`div p:nth-of-type(4)` Selects the fourth paragraph in the div, counting only paragraphs, and ignoring all other elements.
+
+`div p:nth-of-type(-n+4)` Selects the first four paragraphs, ignoring all others.
+
+And you can always select an element that matches one set of rules but not another using :not. For example:
+
+`p:not(.post)` Matches all paragraphs that do not have the class .post.
+
