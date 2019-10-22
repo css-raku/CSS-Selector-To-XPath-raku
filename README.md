@@ -15,7 +15,6 @@ SYNOPSIS
 
     # functional interface
     use CSS::Selector::To::XPath :selector-to-xpath;
-    use HTML::Selector::XPath 'selector_to_xpath';
     my $xpath = selector-to-xpath('div.foo');
 
     my $relative = selector-to-xpath('div.foo', :relative );
@@ -152,11 +151,11 @@ Pseudo functions
 
   * `:content(string)` – Match the element only if it has string as its text content (ignoring leading and trailing whitespace).
 
-  * `:nth-child(b)` – Match the element if it is the b-th child (element) of its parent element. The value b specifies its index, starting with 1.
+  * `:nth-child(b)` – Match the element if it is the b-th child (element) of its parent element. The value `b` specifies its index, starting with 1.
 
   * `:nth-child(an+b)` – Match the element if it is the b-th child (element) in each group of a child elements of its parent element.
 
-  * `:nth-child(-an+b)` – Match the element if it is the first child (element) in each group of a child elements, up to the first b child elements of its parent element.
+  * `:nth-child(-an+b)` – Match the element if it is the first child (element) in each group of a child elements, up to the first `b` child elements of its parent element.
 
   * `:nth-child(even)` – Match element in the even position (i.e. second, fourth). Same as `:nth-child(2n)`.
 
@@ -180,7 +179,19 @@ For example:
 
 `div p:nth-of-type(-n+4)` Selects the first four paragraphs, ignoring all others.
 
-And you can always select an element that matches one set of rules but not another using :not. For example:
+And you can always select an element that matches one set of rules but not another using `:not`. For example:
 
-`p:not(.post)` Matches all paragraphs that do not have the class .post.
+`p:not(.post)` Matches all paragraphs that do not have the class `.post`.
+
+ACKNOWLEDGEMENTS
+================
+
+This Raku module is based on tests from the Perl 5 HTML::Selector::XPath module. Some rules have been derived from the notogiri Ruby gem.
+
+Material for the 'Mini Tutorial on CSS Selectors' has been adapted from https://www.rubydoc.info/docs/rails/4.1.7/HTML/Selector.
+
+LICENSE
+=======
+
+This library is free software; you can redistribute it and/or modify it under the same terms as Rakudo itself.
 
