@@ -203,6 +203,11 @@ This Raku module is based on tests from the Perl 5 HTML::Selector::XPath module.
 
 Material for the 'Mini Tutorial on CSS Selectors' has been adapted from https://www.rubydoc.info/docs/rails/4.1.7/HTML/Selector.
 
+VERSION
+=======
+
+0.0.2
+
 LICENSE
 =======
 

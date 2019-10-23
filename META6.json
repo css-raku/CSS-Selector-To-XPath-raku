@@ -1,7 +1,7 @@
 {   "perl"        : "6.c",
     "name"        : "CSS::Selector::To::XPath",
     "license"     : "Artistic-2.0",
-    "version"     : "0.0.1",
+    "version"     : "0.0.2",
     "description" : "CSS Selector to XPath converter",
     "depends"     : [ "CSS::Grammar:ver(v0.3.3+)", "CSS::Module::CSS3::Selectors", "XML" ],
     "source-url"  : "git://github.com/p6-css/CSS-Selector-To-XPath-raku.git",
