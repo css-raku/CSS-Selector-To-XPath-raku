@@ -99,8 +99,11 @@
   <test css="*|h1"	xpath="//*:h1"/>
   <test css="tr:nth-child( 4n+1 )"	xpath="//tr[count(preceding-sibling::*) mod 4 = 0 and parent::*]"/>
   <test css="tr:nth-child( 4n+2 )"	xpath="//tr[count(preceding-sibling::*) mod 4 = 1 and parent::*]"/>
-  <test css="tr:nth-child( 4n+3 )"	xpath="//tr[count(preceding-sibling::*) mod 4 = 2 and count(preceding-sibling::*) &gt;= 2 and parent::*]"/>
-  <test css="tr:nth-child( 4n-1 )"	xpath="//tr[count(preceding-sibling::*) mod 4 = 2 and count(preceding-sibling::*) &gt;= 2 and parent::*]"/>
+  <test css="tr:nth-child( 4n+3 )"	xpath="//tr[count(preceding-sibling::*) mod 4 = 2 and parent::*]"/>
+  <test css="tr:nth-child( 4n+4 )"	xpath="//tr[count(preceding-sibling::*) mod 4 = 3 and parent::*]"/>
+  <test css="tr:nth-child( 4n+5 )"	xpath="//tr[count(preceding-sibling::*) mod 4 = 0 and count(preceding-sibling::*) &gt;= 4 and parent::*]"/>
+  <test css="tr:nth-child( 4n+6 )"	xpath="//tr[count(preceding-sibling::*) mod 4 = 1 and count(preceding-sibling::*) &gt;= 5 and parent::*]"/>
+  <test css="tr:nth-child( 4n-1 )"	xpath="//tr[count(preceding-sibling::*) mod 4 = 2 and parent::*]"/>
   <test css="tr:nth-child( -2n+ 6 )"	xpath="//tr[count(preceding-sibling::*) * 2 &lt;= 5 and parent::*]"/>
   <test css="tr:nth-child( -n+ 6 )"	xpath="//tr[count(preceding-sibling::*) &lt;= 5 and parent::*]"/>
 </tests>

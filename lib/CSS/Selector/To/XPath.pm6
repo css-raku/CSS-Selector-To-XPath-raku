@@ -160,9 +160,9 @@ sub write-AnB($n, Int $A is copy, Int $B is copy) {
     when $A == 0  { "$n = $B" }
     when $A == 1  { "$n > $B" }
     when $A >  1  {
-        $B mod= $A if $B < 0;
-        given "$n mod $A = $B" {
-            $B > 1 ?? "$_ and $n >= $B" !! $_;
+        my $Bm = $B mod $A;
+        given "$n mod $A = $Bm" {
+            $B >= $A ?? "$_ and $n >= $B" !! $_;
         }
     }
     when $A == -1 { "$n <= $B" }
