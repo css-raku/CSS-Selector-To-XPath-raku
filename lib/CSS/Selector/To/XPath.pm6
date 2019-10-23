@@ -265,24 +265,25 @@ CSS::Selector::To::XPath - Raku CSS Selector to XPath compiler
 =head1 SYNOPSIS
 
   use CSS::Selector::To::XPath;
-  given CSS::Selector::To::XPath.new {
-      say .selector-to-xpath(:css<li#main">); # //li[@id='main']
-  }
+  my $c2x = CSS::Selector::To::XPath.new;
+  say $c2x.selector-to-xpath(:css<li#main">);
+  # //li[@id='main']
 
   # functional interface
   use CSS::Selector::To::XPath :selector-to-xpath;
-  my $xpath = selector-to-xpath('div.foo');
+  my $xpath = selector-to-xpath: :css<div.foo>;
+  # //div[contains(concat(' ', @class, ' '), ' foo ')]
 
-  my $relative = selector-to-xpath('div.foo', :relative );
+  my $relative = selector-to-xpath: :css<div.foo>, :relative;
   # ./div[contains(concat(' ', @class, ' '), ' foo ')]
 
-  my $ns = selector-to-xpath('div.foo', :prefix<xhtml> );
-  # xhtml:div[contains(concat(' ', @class, ' '), ' foo ')]
+  my $ns = selector-to-xpath: :css<div.foo>, :prefix<xhtml>;
+  # //xhtml:div[contains(concat(' ', @class, ' '), ' foo ')]
 
 =head1 DESCRIPTION
 
-CSS::Selector::To::XPath is a utility function to compile full set of
-CSS2 and partial CSS3 selectors to the equivalent XPath expression.
+CSS::Selector::To::XPath is a utility function to compile the full set of
+CSS2 and partial set CSS3 selectors to equivalent XPath expressions.
 
 =head1 FUNCTIONS and METHODS
 
