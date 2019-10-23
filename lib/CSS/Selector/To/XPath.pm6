@@ -156,13 +156,11 @@ sub grok-AnB-expr(@expr) {
 
 sub write-AnB($n, Int $A is copy, Int $B is copy) {
     $A ||= 0;
-    if $A > 0 {
-        $B += $A while $B < 0;
-    }
 
     when $A == 0  { "$n = $B" }
     when $A == 1  { "$n > $B" }
     when $A >  1  {
+        $B mod= $A if $B < 0;
         given "$n mod $A = $B" {
             $B > 1 ?? "$_ and $n >= $B" !! $_;
         }
@@ -293,7 +291,7 @@ selector-to-xpath
   $xpath = selector-to-xpath(:$css, |%opt);
 
 Shortcut for C<< CSS::Selector::To::XPath.new(|%opt).to-xpath(:$css) >>. Parses the CSS selector expression and returns
-an equivalent XPath exppression.Exported upon request.
+an equivalent XPath exppression. Exported upon request.
 =end item
 
 =begin item
