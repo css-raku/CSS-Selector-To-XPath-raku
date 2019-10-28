@@ -56,6 +56,27 @@ FUNCTIONS and METHODS
 
     This is a more advanced method that bypasses parsing of CSS selector expressions. Instead it constructs XPath expressions directly from AST trees, as produced by the CSS::Module::CSS3::Selectors parser.
 
+Defining Custom Pseudo Classes
+==============================
+
+This module has built-in support for only the following Pseudo Classes:
+
+    :checked :disabled :empty :first-child :first-of-type :last-child :last-of-type :only-child :only-of-type :root :selected
+
+In particular, the following dynamic pseudo classes DO NOT have a default definition:
+
+    :link :visited :hover :active, :focus
+
+You can however define additional Pseudo Classes by adding them to the global `%PSEUDO-CLASSES` variable or to the `.pseudo-classes()` Hash accessor:
+
+    use CSS::Selector::To::XPath :%PSEUDO-CLASSES;
+    # set-up a global xpath mapping
+    %PSEUDO-CLASSES<visited> = 'visited()';
+    #-OR-
+    # set-up a mapping on an object instance
+    my CSS::Selector::To::XPath $to-xml .= new;
+    $to-xml.pseudo-classes<visited> = 'visited()';
+
 Mini Tutorial on CSS Selectors
 ==============================
 
@@ -206,7 +227,7 @@ Material for the 'Mini Tutorial on CSS Selectors' has been adapted from https://
 VERSION
 =======
 
-0.0.2
+0.0.3
 
 LICENSE
 =======

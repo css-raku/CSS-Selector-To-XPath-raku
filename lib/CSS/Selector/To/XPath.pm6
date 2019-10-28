@@ -1,12 +1,31 @@
 use v6;
 
-unit class CSS::Selector::To::XPath:ver<0.0.2>;
+unit class CSS::Selector::To::XPath:ver<0.0.3>;
 
 use CSS::Module::CSS3::Selectors;
 subset NCName of Str is export(:NCName) where Str:U|/^<CSS::Module::CSS3::Selectors::element-name>$/;
 subset QName of Str is export(:QName) where Str:U|/^<CSS::Module::CSS3::Selectors::qname>$/;
 has Bool $.relative;
 has NCName $.prefix;
+
+our %PSEUDO-CLASSES is export(:PSEUDO-CLASSES) = %(
+    :checked<@checked>,
+    :disabled<@disabled>,
+    :empty<not(node())>,
+    :first-child('count(preceding-sibling::*) = 0 and parent::*'),
+    :first-of-type<1>,
+    :last-child('count(following-sibling::*) = 0 and parent::*'),
+    :last-of-type<last()>,
+    :only-child('count(preceding-sibling::*) = 0 and count(following-sibling::*) = 0 and parent::*'),
+    :only-of-type('count() = 1'),
+    :root<not(parent::*)>,
+    :selected<@selected>,
+);
+has %.pseudo-classes = %PSEUDO-CLASSES;
+
+method xpath-pseudo-class($_) {
+    %!pseudo-classes{$_} // die "unknown pseudo-class: $_";
+}
 
 multi method xpath(Pair $_) {
     self."xpath-{.key}"( .value );
@@ -20,7 +39,7 @@ multi method xpath-combinator('>')  { '' }                               # child
 multi method xpath-combinator('~')  { 'following-sibling::' }            # sibling
 multi method xpath-combinator('+')  { 'following-sibling::*[1]/self::' } # adjacent
 multi method xpath-combinator($_) is default {
-    warn "ignoring CSS '$_' operator";
+    warn "ignoring CSS '$_' combinator";
     '';
 }
 
@@ -69,54 +88,6 @@ method xpath-qname(% (:$element-name!, :$ns-prefix = $!prefix)) {
     else {
         $element-name;
     }
-}
-
-multi method xpath-pseudo-class('checked') {
-    '@checked';
-}
-
-multi method xpath-pseudo-class('disabled') {
-    '@disabled';
-}
-
-multi method xpath-pseudo-class('empty') {
-    'not(node())';
-}
-
-multi method xpath-pseudo-class('first-child') {
-    'count(preceding-sibling::*) = 0 and parent::*'
-}
-
-multi method xpath-pseudo-class('first-of-type') {
-    '1';
-}
-
-multi method xpath-pseudo-class('last-child') {
-    'count(following-sibling::*) = 0 and parent::*'
-}
-
-multi method xpath-pseudo-class('last-of-type') {
-    'last()';
-}
-
-multi method xpath-pseudo-class('only-child') {
-    'count(preceding-sibling::*) = 0 and count(following-sibling::*) = 0 and parent::*'
-}
-
-multi method xpath-pseudo-class('only-of-type') {
-    'count() = 1';
-}
-
-multi method xpath-pseudo-class('root') {
-    'not(parent::*)'
-}
-
-multi method xpath-pseudo-class('selected') {
-    '@selected';
-}
-
-multi method xpath-pseudo-class($_) is default {
-    die "unimplemented pseudo-class: $_";
 }
 
 multi method _pseudo-func('lang', % (:$ident )) {
@@ -318,6 +289,26 @@ as produced by the CSS::Module::CSS3::Selectors parser.
 
 =end item
 
+=head1 Defining Custom Pseudo Classes
+
+This module has built-in support for only the following Pseudo Classes:
+
+    :checked :disabled :empty :first-child :first-of-type :last-child :last-of-type :only-child :only-of-type :root :selected
+
+In particular, the following dynamic pseudo classes DO NOT have a default definition:
+
+     :link :visited :hover :active, :focus 
+
+You can however define additional Pseudo Classes by adding them to the global `%PSEUDO-CLASSES` variable or to the `.pseudo-classes()` Hash accessor:
+
+  use CSS::Selector::To::XPath :%PSEUDO-CLASSES;
+  # set-up a global xpath mapping
+  %PSEUDO-CLASSES<visited> = 'visited()';
+  #-OR-
+  # set-up a mapping on an object instance
+  my CSS::Selector::To::XPath $to-xml .= new;
+  $to-xml.pseudo-classes<visited> = 'visited()';
+
 =head1 Mini Tutorial on CSS Selectors
 
 =head2 Expressions
@@ -469,7 +460,7 @@ Material for the 'Mini Tutorial on CSS Selectors' has been adapted from https://
 
 =head1 VERSION
 
-0.0.2
+0.0.3
 
 =head1 LICENSE
 

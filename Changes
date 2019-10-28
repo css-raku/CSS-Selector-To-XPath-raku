@@ -1,3 +1,6 @@
+0.0.3 2019-10-30
+    Allow additional Pseudo Classes to be defined by adding them to the %PSEUDO-CLASSES
+    global Hash or to the .pseudo-classes() Hash accessor on object instances.
 0.0.2 2019-10-24
     Corrections and optimisations to An+b microsyntax
 0.0.1 2019-10-22
