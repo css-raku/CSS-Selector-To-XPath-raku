@@ -10,7 +10,7 @@ SYNOPSIS
 
     use CSS::Selector::To::XPath;
     my $c2x = CSS::Selector::To::XPath.new;
-    say $c2x.selector-to-xpath(:css<li#main">);
+    say $c2x.query-to-xpath('li#main');
     # //li[@id='main']
 
     # functional interface

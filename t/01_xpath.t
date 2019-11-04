@@ -10,6 +10,8 @@ for '[1a]', '[-1a]', '[--a]', '[!a]', '[ab!c]', '[]', '[x=1a]', '[x=-1a]',
     dies-ok { selector-to-xpath(:$css) }, "invalid css selector: $css";
 }
 
+is CSS::Selector::To::XPath.query-to-xpath('x'), '//x', '.query-to-xpath()';
+
 my XML::Document $tests = from-xml-stream("t/01_xpath.xml".IO.open(:r));
 for $tests.elements {
     my $css   = decode-xml-entities(.<css>);

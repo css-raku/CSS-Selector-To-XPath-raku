@@ -225,6 +225,10 @@ method selector-to-xpath($class = $?CLASS: Str:D :$css!, |c) is export(:selector
     }
 }
 
+method query-to-xpath(Str() $css, |c) {
+    self.selector-to-xpath: :$css, |c;
+}
+
 =begin pod
 
 =head1 NAME
@@ -235,7 +239,7 @@ CSS::Selector::To::XPath - Raku CSS Selector to XPath compiler
 
   use CSS::Selector::To::XPath;
   my $c2x = CSS::Selector::To::XPath.new;
-  say $c2x.selector-to-xpath(:css<li#main">);
+  say $c2x.query-to-xpath('li#main');
   # //li[@id='main']
 
   # functional interface
