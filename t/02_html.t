@@ -1,7 +1,7 @@
 use v6;
 use Test;
 use CSS::Selector::To::XPath;
-try require LibXML;
+try require LibXML:ver(v0.2.0+);
 
 if $! {
     plan 1;
@@ -14,11 +14,11 @@ my CSS::Selector::To::XPath $translator .= new: :relative;
 ok $translator.relative, 'translator is relative';
 
 for $tests<tests/test> {
-    my Str $css = .<@selector>.Str;
+    my Str $css = .attribute('selector').Str;
+    my $in = .first('in');
+    my $expected = .first('expected');
     my Str $xpath = $translator.selector-to-xpath(:$css);
-    my $in = .<in>[0];
-    my $expected = .<expected>[0];
-    is($in.findnodes($xpath).Str, $expected.nonBlankChildNodes.Str, "css selection: $css")
+    is($in.findnodes($xpath).Str, $expected.elements.Str, "css selection: $css")
     || do {
         diag "selector=$css";
         diag "xpath:$xpath";

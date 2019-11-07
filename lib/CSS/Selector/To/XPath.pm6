@@ -1,25 +1,26 @@
 use v6;
 
-unit class CSS::Selector::To::XPath:ver<0.0.3>;
+unit class CSS::Selector::To::XPath:ver<0.0.4>;
 
 use CSS::Module::CSS3::Selectors;
+use CSS::Module::CSS3::Selectors::Actions;
 subset NCName of Str is export(:NCName) where Str:U|/^<CSS::Module::CSS3::Selectors::element-name>$/;
 subset QName of Str is export(:QName) where Str:U|/^<CSS::Module::CSS3::Selectors::qname>$/;
 has Bool $.relative;
 has NCName $.prefix;
 
 our %PSEUDO-CLASSES is export(:PSEUDO-CLASSES) = %(
-    :checked<@checked>,
-    :disabled<@disabled>,
-    :empty<not(node())>,
-    :first-child('count(preceding-sibling::*) = 0 and parent::*'),
-    :first-of-type<1>,
-    :last-child('count(following-sibling::*) = 0 and parent::*'),
-    :last-of-type<last()>,
-    :only-child('count(preceding-sibling::*) = 0 and count(following-sibling::*) = 0 and parent::*'),
-    :only-of-type('count() = 1'),
-    :root<not(parent::*)>,
-    :selected<@selected>,
+    checked        => '@checked',
+    disabled       => '@disabled',
+    empty          => 'not(node())',
+    first-child    => 'count(preceding-sibling::*) = 0 and parent::*',
+    first-of-type  => '1',
+    last-child     => 'count(following-sibling::*) = 0 and parent::*',
+    last-of-type   => 'last()',
+    only-child     => 'count(preceding-sibling::*) = 0 and count(following-sibling::*) = 0 and parent::*',
+    only-of-type   => 'count() = 1',
+    root           => 'not(parent::*)',
+    selected       => '@selected',
 );
 has %.pseudo-classes = %PSEUDO-CLASSES;
 
@@ -164,6 +165,7 @@ multi method _pseudo-func('not', $expr) {
     my $axes = $expr<qname> ?? 'self::' !! '';
     qq<not({$axes}{$.xpath($expr)})>;
 }
+
 multi method _pseudo-func($_, *@expr) is default {
     warn "unimplemented pseudo-function: $_\({@expr.perl}\)";
     '';
@@ -206,7 +208,7 @@ method xpath-simple-selector(List $_) {
     }
 
     my @selections = @l.map: { '[' ~ $.xpath($_) ~ ']' };
-   $elem ~ @selections.join;
+    $elem ~ @selections.join;
 }
 
 method xpath-string(Str $_) {
@@ -216,7 +218,7 @@ method xpath-string(Str $_) {
 method selector-to-xpath($class = $?CLASS: Str:D :$css!, |c) is export(:selector-to-xpath) {
     my $obj = $class;
     $_ .= new(|c) without $obj;
-    my $actions = (require ::('CSS::Module::CSS3::Selectors::Actions')).new: :xml;
+    my $actions = CSS::Module::CSS3::Selectors::Actions.new: :xml;
     if CSS::Module::CSS3::Selectors.parse($css, :rule<selectors>, :$actions) {
         $obj.xpath($/.ast);
     }
@@ -464,7 +466,7 @@ Material for the 'Mini Tutorial on CSS Selectors' has been adapted from https://
 
 =head1 VERSION
 
-0.0.3
+0.0.4
 
 =head1 LICENSE
 
