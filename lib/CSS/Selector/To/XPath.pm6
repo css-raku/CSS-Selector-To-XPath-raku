@@ -1,6 +1,6 @@
 use v6;
 
-unit class CSS::Selector::To::XPath:ver<0.0.4>;
+unit class CSS::Selector::To::XPath:ver<0.0.5>;
 
 use CSS::Module::CSS3::Selectors;
 use CSS::Module::CSS3::Selectors::Actions;
@@ -180,7 +180,7 @@ method xpath-selectors(List $_) {
     @sel == 1 ?? @sel.head !! @sel.join(' | ');
 }
 
-method xpath-selector(@spec) {
+method xpath-selector(@spec is copy) {
     my @sel;
     @sel.push('.') if $!relative;
     while (@spec) {
@@ -197,9 +197,7 @@ method xpath-selector(@spec) {
     @sel.join;
 }
 
-method xpath-simple-selector(List $_) {
-    my @l = .list;
-
+method xpath-simple-selector(@l is copy) {
     my $elem = do with @l.head<qname> {
         $.xpath(@l.shift);
     }

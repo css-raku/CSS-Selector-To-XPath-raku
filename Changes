@@ -1,3 +1,5 @@
+0.0.5 2019-12-19
+    Fixed .xpath-selector(@spec) to be read-only.
 0.0.4 2019-11-08
     Added .to-xpath() method to support LibXML 0.1.8+ integration
 0.0.3 2019-10-30
