@@ -1,12 +1,13 @@
 use v6;
 
-unit class CSS::Selector::To::XPath:ver<0.0.5>;
+unit class CSS::Selector::To::XPath:ver<0.0.6>;
 
 use CSS::Module::CSS3::Selectors;
 use CSS::Module::CSS3::Selectors::Actions;
 subset NCName of Str is export(:NCName) where Str:U|/^<CSS::Module::CSS3::Selectors::element-name>$/;
 subset QName of Str is export(:QName) where Str:U|/^<CSS::Module::CSS3::Selectors::qname>$/;
 has Bool $.relative;
+has Str $.fallback;
 has NCName $.prefix;
 
 our %PSEUDO-CLASSES is export(:PSEUDO-CLASSES) = %(
@@ -24,8 +25,15 @@ our %PSEUDO-CLASSES is export(:PSEUDO-CLASSES) = %(
 );
 has %.pseudo-classes = %PSEUDO-CLASSES;
 
-method xpath-pseudo-class($_) {
-    %!pseudo-classes{$_} // die "unknown pseudo-class: $_";
+method xpath-pseudo-class($name) {
+    %!pseudo-classes{$name}
+    // do with $!fallback {
+        $_ ~ (.ends-with(')') ?? '' !! '(' ~ $.xpath-string($name) ~ ', .)')
+    }
+    else {
+        warn "unimplemented psuedo-class: $name";
+        '';
+    };
 }
 
 multi method xpath(Pair $_) {
@@ -166,9 +174,22 @@ multi method _pseudo-func('not', $expr) {
     qq<not({$axes}{$.xpath($expr)})>;
 }
 
-multi method _pseudo-func($_, *@expr) is default {
-    warn "unimplemented pseudo-function: $_\({@expr.perl}\)";
-    '';
+multi method _pseudo-func($name, *@expr) is default {
+    my $func = '';
+    with $!fallback {
+        $func = $_;
+        unless $func.ends-with(')') {
+            # provide arguments
+            my @args = @expr.map: { $.xpath($_) };
+            @args.unshift: '.';
+            @args.unshift: $.xpath-string($name);
+            $func ~= '(' ~ @args.join(', ') ~ ')';
+        }
+    }
+    else {
+        warn "unimplemented pseudo-function: $name\({@expr.perl}\)";
+    }
+    $func;
 }
 
 multi method xpath-pseudo-func( % (:$ident!, :$expr )) {
@@ -293,7 +314,7 @@ as produced by the CSS::Module::CSS3::Selectors parser.
 
 =end item
 
-=head1 Defining Custom Pseudo Classes
+=head1 CUSTOM PSEUDO FUNCTIONS
 
 This module has built-in support for only the following Pseudo Classes:
 
@@ -301,17 +322,37 @@ This module has built-in support for only the following Pseudo Classes:
 
 In particular, the following dynamic pseudo classes DO NOT have a default definition:
 
-     :link :visited :hover :active, :focus 
+     :link :visited :hover :active :focus
 
-You can however define additional Pseudo Classes by adding them to the global `%PSEUDO-CLASSES` variable or to the `.pseudo-classes()` Hash accessor:
+This is because they are UI independant and do not have a standard XPath function
+
+=head2 Defining Custom Pseudo Classes
+
+Additional pseudo classes mapping can be defined by adding them to the global `%PSEUDO-CLASSES` variable or to the `.pseudo-classes()` Hash accessor:
 
   use CSS::Selector::To::XPath :%PSEUDO-CLASSES;
   # set-up a global xpath mapping
-  %PSEUDO-CLASSES<visited> = 'visited()';
+  %PSEUDO-CLASSES<visited> = 'my-visited-func(.)';
   #-OR-
   # set-up a mapping on an object instance
   my CSS::Selector::To::XPath $to-xml .= new;
-  $to-xml.pseudo-classes<visited> = 'visited()';
+  $to-xml.pseudo-classes<visited> = 'my-visited-func(.)';
+
+  say $to-xml.selector-to-xpath: :css('a:visited');
+  # //a[my-visited-func(.)]
+
+In the above example `my-visited-func()` needs to be implemented as a custom function in the XPath processor.
+
+=head2 Fallback Pseudo Classes and Functions
+
+This is an additional mechanism for both pseudo classes and functions is to set the `:fallback` option. This will map all unknown psuedos to a fallback xpath function. The default arguments to the function are `(name, ., arg1, arg2, ...)` where `name` is the name of the psuedo (lowercase), `.` is the current node and `arg1, arg2, ...` are any arguments that have been passed to pseudo functions.
+
+  use CSS::Selector::To::XPath;
+  my CSS::Selector::To::XPath $to-xml .= new(:fallback<pseudo>);
+  say $to-xml.selector-to-xpath: :css('a:visited:color("blue")');
+  # /a[pseudo('visited', .)][pseudo('color', ., 'blue')]
+
+The fallback function may need to be implemented as a custom function in the XPath processor.
 
 =head1 Mini Tutorial on CSS Selectors
 
