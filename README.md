@@ -249,7 +249,7 @@ Material for the 'Mini Tutorial on CSS Selectors' has been adapted from https://
 VERSION
 =======
 
-0.0.4
+0.0.6
 
 LICENSE
 =======

@@ -1,6 +1,6 @@
 use v6;
 
-unit class CSS::Selector::To::XPath:ver<0.0.6>;
+unit class CSS::Selector::To::XPath:ver<0.0.7>;
 
 use CSS::Module::CSS3::Selectors;
 use CSS::Module::CSS3::Selectors::Actions;
@@ -505,7 +505,7 @@ Material for the 'Mini Tutorial on CSS Selectors' has been adapted from https://
 
 =head1 VERSION
 
-0.0.4
+0.0.6
 
 =head1 LICENSE
 

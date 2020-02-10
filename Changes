@@ -1,3 +1,5 @@
+0.0.7 2020-xx-xx
+    Rename source *.pm6 -> *.rakumod
 0.0.6 2019-12-24
     Added :fallback<name> option for unknown puesdo functions and classes
 0.0.5 2019-12-19
