@@ -11,7 +11,7 @@
   "provides": {
     "CSS::Selector::To::XPath": "lib/CSS/Selector/To/XPath.rakumod"
   },
-  "source-url": "git://github.com/p6-css/CSS-Selector-To-XPath-raku.git",
+  "source-url": "git://github.com/css-raku/CSS-Selector-To-XPath-raku.git",
   "tags": [
     "xml",
     "html",
