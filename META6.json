@@ -1,6 +1,6 @@
 {
   "depends": [
-    "CSS::Grammar:ver(v0.3.3+)",
+    "CSS::Grammar:ver<v0.3.3+>",
     "CSS::Module::CSS3::Selectors",
     "XML"
   ],
