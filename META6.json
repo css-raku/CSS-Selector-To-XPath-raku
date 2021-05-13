@@ -1,23 +1,32 @@
 {
   "auth": "cpan:WARRINGD",
+  "authors": [
+    "David Warring"
+  ],
+  "build-depends": [
+  ],
   "depends": [
     "CSS::Grammar:ver<0.3.5+>",
     "CSS::Module::CSS3::Selectors",
     "XML"
   ],
-  "description": "CSS Selector to XPath converter",
+  "description": "Raku CSS Selector to XPath compiler",
   "license": "Artistic-2.0",
   "name": "CSS::Selector::To::XPath",
   "perl": "6.c",
   "provides": {
     "CSS::Selector::To::XPath": "lib/CSS/Selector/To/XPath.rakumod"
   },
+  "resources": [
+  ],
   "source-url": "git://github.com/css-raku/CSS-Selector-To-XPath-raku.git",
   "tags": [
     "xml",
     "html",
     "xpath",
     "css"
+  ],
+  "test-depends": [
   ],
   "version": "0.0.7"
 }
