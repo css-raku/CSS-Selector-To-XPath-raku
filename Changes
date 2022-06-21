@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.0.8  2022-06-22T09:57:28+12:00
+    More type-checking in method signatures
+    Upload to zef ecosystem
+
 0.0.7  2021-05-14T06:35:02+12:00
     Rename source *.pm6 -> *.rakumod
 

@@ -1,6 +1,6 @@
 use v6;
 
-unit class CSS::Selector::To::XPath:ver<0.0.7>;
+unit class CSS::Selector::To::XPath:ver<0.0.8>;
 
 use CSS::Module::CSS3::Selectors;
 use CSS::Module::CSS3::Selectors::Actions;
