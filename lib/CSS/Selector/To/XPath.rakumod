@@ -150,22 +150,22 @@ sub write-AnB($n, Int $A is copy, Int $B is copy) {
 }
 
 multi method _pseudo-func('nth-child', *@expr) {
-    my ($a, $b) = grok-AnB-expr(@expr);
+    my :($a, $b) := grok-AnB-expr(@expr);
      write-AnB('count(preceding-sibling::*)', $a, $b-1) ~ ' and parent::*';
 }
 
 multi method _pseudo-func('nth-last-child', *@expr) {
-    my ($a, $b) = grok-AnB-expr(@expr);
+    my :($a, $b) := grok-AnB-expr(@expr);
     write-AnB('count(following-sibling::*)', $a, $b-1) ~ ' and parent::*';
 }
 
 multi method _pseudo-func('nth-of-type', *@expr) {
-    my ($a, $b) = grok-AnB-expr(@expr);
+    my :($a, $b) := grok-AnB-expr(@expr);
     $a ?? write-AnB('position()', $a, $b) !! $b;
 }
 
 multi method _pseudo-func('nth-last-of-type', *@expr) {
-    my ($a, $b) = grok-AnB-expr(@expr);
+    my :($a, $b) := grok-AnB-expr(@expr);
     $a ?? write-AnB('count() - position()', $a, $b-1) !! 'count() - ' ~ ($b - 1);
 }
 
