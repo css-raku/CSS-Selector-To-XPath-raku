@@ -25,7 +25,7 @@ our %PSEUDO-CLASSES is export(:PSEUDO-CLASSES) = %(
 );
 has %.pseudo-classes = %PSEUDO-CLASSES;
 
-method xpath-pseudo-class($name) {
+method xpath-pseudo-class(Str:D $name) {
     %!pseudo-classes{$name}
     // do with $!fallback {
         $_ ~ (.ends-with(')') ?? '' !! '(' ~ $.xpath-string($name) ~ ', .)')
@@ -36,26 +36,26 @@ method xpath-pseudo-class($name) {
     };
 }
 
-multi method xpath(Pair $_) {
+multi method xpath(Pair:D $_) {
     self."xpath-{.key}"( .value );
 }
 
-multi method xpath(Hash $_ where .elems == 1) {
+multi method xpath(Hash:D $_ where .elems == 1) {
     self.xpath(.pairs[0]);
 }
 
 multi method xpath-combinator('>')  { '' }                               # child
 multi method xpath-combinator('~')  { 'following-sibling::' }            # sibling
 multi method xpath-combinator('+')  { 'following-sibling::*[1]/self::' } # adjacent
-multi method xpath-combinator($_) is default {
+multi method xpath-combinator($_) {
     warn "ignoring CSS '$_' combinator";
     '';
 }
 
-multi method _attrib-expr(%name, % ( :$op! ), %val) {
+multi method _attrib-expr(%name, % ( Str:D :$op! ), %val) {
     my $att = '@' ~ $.xpath(%name);
     my $v = %val<ident> // %val<string>;
-    with $op {
+    given $op {
         when '='  { $att ~ '=' ~ $.xpath-string($v)  }
         when '^=' { qq<starts-with($att, $.xpath-string($v))> }
         when '~=' { qq<contains(concat(' ', $att, ' '), { $.xpath-string(' ' ~ $v ~ ' ') })> }
@@ -70,7 +70,7 @@ multi method _attrib-expr(%name) {
     '@' ~ $.xpath(%name)
 }
 
-multi method xpath-attrib(List $_) {
+multi method xpath-attrib(List:D $_) {
     $._attrib-expr(|$_);
 }
 
@@ -78,15 +78,15 @@ method xpath-class(Str:D $_) {
     qq<contains(concat(' ', normalize-space(@class), ' '), ' $_ ')>;
 }
 
-method xpath-id(Str $_) {
+method xpath-id(Str:D $_) {
     qq<@id={$.xpath-string($_)}>
 }
 
-method xpath-ident(Str $_) {
+method xpath-ident(Str:D $_) {
     $_;
 }
 
-method xpath-int(Int $_) {
+method xpath-int(Int:D $_) {
     .Str;
 }
 
@@ -99,7 +99,7 @@ method xpath-qname(% (:$element-name!, :$ns-prefix = $!prefix)) {
     }
 }
 
-multi method _pseudo-func('lang', % (:$ident )) {
+multi method _pseudo-func('lang', % (Str:D :$ident! )) {
     qq<lang(., {$ident})>;
 }
 
@@ -174,7 +174,7 @@ multi method _pseudo-func('not', $expr) {
     qq<not({$axes}{$.xpath($expr)})>;
 }
 
-multi method _pseudo-func($name, *@expr) is default {
+multi method _pseudo-func(Str:D $name, *@expr) {
     my $func = '';
     with $!fallback {
         $func = $_;
@@ -192,11 +192,11 @@ multi method _pseudo-func($name, *@expr) is default {
     $func;
 }
 
-multi method xpath-pseudo-func( % (:$ident!, :$expr )) {
+multi method xpath-pseudo-func( % (Str:D :$ident!, :$expr! )) {
     $._pseudo-func($ident, |$expr);
 }
 
-method xpath-selectors(List $_) {
+method xpath-selectors(List:D $_) {
     my @sel = .map({ $.xpath-selector(.<selector>) });
     @sel == 1 ?? @sel.head !! @sel.join(' | ');
 }
@@ -230,14 +230,14 @@ method xpath-simple-selector(@l is copy) {
     $elem ~ @selections.join;
 }
 
-method xpath-string(Str $_) {
+method xpath-string(Str:D $_) {
     "'" ~ .subst("'", "''", :g) ~ "'";
 }
 
 method selector-to-xpath($class = $?CLASS: Str:D :$css!, |c) is export(:selector-to-xpath) {
     my $obj = $class;
     $_ .= new(|c) without $obj;
-    my $actions = CSS::Module::CSS3::Selectors::Actions.new: :xml;
+    my CSS::Module::CSS3::Selectors::Actions $actions .= new: :xml;
     if CSS::Module::CSS3::Selectors.parse($css, :rule<selectors>, :$actions) {
         $obj.xpath($/.ast);
     }
@@ -246,7 +246,7 @@ method selector-to-xpath($class = $?CLASS: Str:D :$css!, |c) is export(:selector
     }
 }
 
-method query-to-xpath(Str() $css, |c) {
+method query-to-xpath(Str:D() $css, |c) {
     self.selector-to-xpath: :$css, |c;
 }
 
