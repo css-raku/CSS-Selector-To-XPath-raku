@@ -187,7 +187,7 @@ multi method _pseudo-func(Str:D $name, *@expr) {
         }
     }
     else {
-        warn "unimplemented pseudo-function: $name\({@expr.perl}\)";
+        warn "unimplemented pseudo-function: $name\({@expr.raku}\)";
     }
     $func;
 }
@@ -498,14 +498,10 @@ Matches all paragraphs that do not have the class C<.post>.
 
 =head1 ACKNOWLEDGEMENTS
 
-This Raku module is based on tests from the Perl 5 HTML::Selector::XPath module. Some rules have been
+This Raku module is based on tests from the Perl HTML::Selector::XPath module. Some rules have been
 derived from the notogiri Ruby gem.
 
 Material for the 'Mini Tutorial on CSS Selectors' has been adapted from https://www.rubydoc.info/docs/rails/4.1.7/HTML/Selector.
-
-=head1 VERSION
-
-0.0.6
 
 =head1 LICENSE
 

@@ -4,9 +4,13 @@ DocLinker=../$(DocProj)/etc/resolve-links.raku
 
 all : doc
 
-doc : README.md
+doc : Pod-To-Markdown-installed README.md
+
+Pod-To-Markdown-installed :
+	@raku -M Pod::To::Markdown -c
 
 README.md : lib/CSS/Selector/To/XPath.rakumod
+	@raku -I . -c $<
 	(\
 	    echo '[![Build Status](https://travis-ci.org/css-raku/CSS-Selector-To-XPath-raku.svg?branch=master)](https://travis-ci.org/css-raku/CSS-Selector-To-XPath-raku)'; \
             echo '';\

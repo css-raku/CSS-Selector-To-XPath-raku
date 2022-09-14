@@ -245,14 +245,9 @@ And you can always select an element that matches one set of rules but not anoth
 ACKNOWLEDGEMENTS
 ================
 
-This Raku module is based on tests from the Perl 5 HTML::Selector::XPath module. Some rules have been derived from the notogiri Ruby gem.
+This Raku module is based on tests from the Perl HTML::Selector::XPath module. Some rules have been derived from the notogiri Ruby gem.
 
 Material for the 'Mini Tutorial on CSS Selectors' has been adapted from https://www.rubydoc.info/docs/rails/4.1.7/HTML/Selector.
-
-VERSION
-=======
-
-0.0.6
 
 LICENSE
 =======
