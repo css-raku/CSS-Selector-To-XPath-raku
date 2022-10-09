@@ -2,9 +2,12 @@ DocProj=css-raku.github.io
 DocRepo=https://github.com/css-raku/$(DocProj)
 DocLinker=../$(DocProj)/etc/resolve-links.raku
 
+$(DocLinker) :
+	(cd .. && git clone $(DocRepo) $(DocProj))
+
 all : doc
 
-doc : Pod-To-Markdown-installed README.md
+doc : Pod-To-Markdown-installed README.md $(DocLinker)
 
 Pod-To-Markdown-installed :
 	@raku -M Pod::To::Markdown -c

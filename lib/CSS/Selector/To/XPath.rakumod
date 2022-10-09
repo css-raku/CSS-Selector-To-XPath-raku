@@ -26,8 +26,7 @@ our %PSEUDO-CLASSES is export(:PSEUDO-CLASSES) = %(
 has %.pseudo-classes = %PSEUDO-CLASSES;
 
 method xpath-pseudo-class(Str:D $name) {
-    %!pseudo-classes{$name}
-    // do with $!fallback {
+    %!pseudo-classes{$name} // do with $!fallback {
         $_ ~ (.ends-with(')') ?? '' !! '(' ~ $.xpath-string($name) ~ ', .)')
     }
     else {
@@ -204,7 +203,7 @@ method xpath-selectors(List:D $_) {
 method xpath-selector(@spec is copy) {
     my @sel;
     @sel.push('.') if $!relative;
-    while (@spec) {
+    while @spec {
         my $combinator = '/';
         with @spec.head<op> {
             @spec.shift;
@@ -345,7 +344,7 @@ In the above example `my-visited-func()` needs to be implemented as a custom fun
 
 =head2 Fallback Pseudo Classes and Functions
 
-This is an additional mechanism for both pseudo classes and functions is to set the `:fallback` option. This will map all unknown psuedos to a fallback xpath function. The default arguments to the function are `(name, ., arg1, arg2, ...)` where `name` is the name of the psuedo (lowercase), `.` is the current node and `arg1, arg2, ...` are any arguments that have been passed to pseudo functions.
+This is an additional mechanism to set the `:fallback` option for both pseudo classes and functions. This will map all unknown pseudos to a fallback xpath function. The default arguments to the function are `(name, ., arg1, arg2, ...)` where `name` is the name of the psuedo (lowercase), `.` is the current node and `arg1, arg2, ...` are any arguments that have been passed to pseudo functions.
 
   use CSS::Selector::To::XPath;
   my CSS::Selector::To::XPath $to-xml .= new(:fallback<pseudo>);

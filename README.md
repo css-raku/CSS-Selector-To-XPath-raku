@@ -93,7 +93,7 @@ In the above example `my-visited-func()` needs to be implemented as a custom fun
 Fallback Pseudo Classes and Functions
 -------------------------------------
 
-This is an additional mechanism for both pseudo classes and functions is to set the `:fallback` option. This will map all unknown psuedos to a fallback xpath function. The default arguments to the function are `(name, ., arg1, arg2, ...)` where `name` is the name of the psuedo (lowercase), `.` is the current node and `arg1, arg2, ...` are any arguments that have been passed to pseudo functions.
+This is an additional mechanism to set the `:fallback` option for both pseudo classes and functions. This will map all unknown pseudos to a fallback xpath function. The default arguments to the function are `(name, ., arg1, arg2, ...)` where `name` is the name of the psuedo (lowercase), `.` is the current node and `arg1, arg2, ...` are any arguments that have been passed to pseudo functions.
 
     use CSS::Selector::To::XPath;
     my CSS::Selector::To::XPath $to-xml .= new(:fallback<pseudo>);
