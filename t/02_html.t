@@ -17,7 +17,7 @@ for $tests<tests/test> {
     my Str $css = .attribute('selector').Str;
     my $in = .first('in');
     my $expected = .first('expected');
-    my Str $xpath = $translator.selector-to-xpath(:$css);
+    my Str $xpath = $translator.selector-to-xpath(:$css, :html);
     is($in.findnodes($xpath).Str, $expected.elements.Str, "css selection: $css")
     || do {
         diag "selector=$css";

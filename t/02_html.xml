@@ -10,7 +10,7 @@
       <div class="foo">foo</div>
     </expected>
   </test>
-  <test selector='ul li'>
+  <test selector='ul LI'>
     <in>
       <ul>
         <li><a href="foo.html">bar</a></li>

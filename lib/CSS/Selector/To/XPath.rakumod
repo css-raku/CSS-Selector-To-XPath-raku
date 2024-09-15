@@ -69,7 +69,7 @@ multi method _attrib-expr(%name) {
     '@' ~ $.xpath(%name)
 }
 
-multi method xpath-attrib(List:D $_) {
+method xpath-attrib(List:D $_) {
     $._attrib-expr(|$_);
 }
 
@@ -196,7 +196,7 @@ multi method xpath-pseudo-func( % (Str:D :$ident!, :$expr! )) {
 }
 
 method xpath-selectors(List:D $_) {
-    my @sel = .map({ $.xpath-selector(.<selector>) });
+    my @sel = .map: { $.xpath-selector(.<selector>) };
     @sel == 1 ?? @sel.head !! @sel.join(' | ');
 }
 
@@ -233,10 +233,10 @@ method xpath-string(Str:D $_) {
     "'" ~ .subst("'", "''", :g) ~ "'";
 }
 
-method selector-to-xpath($class = $?CLASS: Str:D :$css!, |c) is export(:selector-to-xpath) {
+method selector-to-xpath($class = $?CLASS: Str:D :$css!, Bool :$html, Bool :$xml = !$html, |c) is export(:selector-to-xpath) {
     my $obj = $class;
     $_ .= new(|c) without $obj;
-    my CSS::Module::CSS3::Selectors::Actions $actions .= new: :xml;
+    my CSS::Module::CSS3::Selectors::Actions $actions .= new: :$xml;
     if CSS::Module::CSS3::Selectors.parse($css, :rule<selectors>, :$actions) {
         $obj.xpath($/.ast);
     }
@@ -418,7 +418,7 @@ and so do the following two selectors:
 
 C<.my_class>
 C<[class~=my_class]>
- 
+
 =head2 Alternatives, siblings, children
 
 Complex selectors use a combination of expressions to match elements:
@@ -507,4 +507,3 @@ Material for the 'Mini Tutorial on CSS Selectors' has been adapted from https://
 This library is free software; you can redistribute it and/or modify it under the same terms as Rakudo itself.
 
 =end pod
- 

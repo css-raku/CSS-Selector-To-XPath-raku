@@ -37,7 +37,7 @@ FUNCTIONS and METHODS
 
   * selector-to-xpath
 
-        $xpath = selector-to-xpath(:$css, |%opt);
+        $xpath = selector-to-xpath(:$css, :$html, |%opt);
 
     Shortcut for `CSS::Selector::To::XPath.new(|%opt).to-xpath(:$css) `. Parses the CSS selector expression and returns an equivalent XPath exppression. Exported upon request.
 
