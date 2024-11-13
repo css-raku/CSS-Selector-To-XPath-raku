@@ -39,7 +39,7 @@ FUNCTIONS and METHODS
 
         $xpath = selector-to-xpath(:$css, :$html, |%opt);
 
-    Shortcut for `CSS::Selector::To::XPath.new(|%opt).to-xpath(:$css) `. Parses the CSS selector expression and returns an equivalent XPath exppression. Exported upon request.
+    Shortcut for `CSS::Selector::To::XPath.new(|%opt).to-xpath(:$css) `. Parses the CSS selector expression and returns an equivalent XPath expression. Exported upon request.
 
   * new
 
@@ -70,7 +70,7 @@ In particular, the following dynamic pseudo classes DO NOT have a default defini
 
     :link :visited :hover :active :focus
 
-This is because they are UI independant and do not have a standard XPath function
+This is because they are UI independent and do not have a standard XPath function
 
 Defining Custom Pseudo Classes
 ------------------------------
@@ -93,7 +93,7 @@ In the above example `my-visited-func()` needs to be implemented as a custom fun
 Fallback Pseudo Classes and Functions
 -------------------------------------
 
-This is an additional mechanism to set the `:fallback` option for both pseudo classes and functions. This will map all unknown pseudos to a fallback xpath function. The default arguments to the function are `(name, ., arg1, arg2, ...)` where `name` is the name of the psuedo (lowercase), `.` is the current node and `arg1, arg2, ...` are any arguments that have been passed to pseudo functions.
+This is an additional mechanism to set the `:fallback` option for both pseudo classes and functions. This will map all unknown pseudos to a fallback xpath function. The default arguments to the function are `(name, ., arg1, arg2, ...)` where `name` is the name of the pseudo (lowercase), `.` is the current node and `arg1, arg2, ...` are any arguments that have been passed to pseudo functions.
 
     use CSS::Selector::To::XPath;
     my CSS::Selector::To::XPath $to-xml .= new(:fallback<pseudo>);
@@ -208,7 +208,7 @@ Pseudo classes Pseudo classes were introduced in CSS 3. They are most often used
 Pseudo functions
 ----------------
 
-  * `:content(string)` – Match the element only if it has string as its text content (ignoring leading and trailing whitespace).
+  * `:content(string)` – Match the element only if it has string as its text content (ignoring leading and trailing white-space).
 
   * `:nth-child(b)` – Match the element if it is the b-th child (element) of its parent element. The value `b` specifies its index, starting with 1.
 
