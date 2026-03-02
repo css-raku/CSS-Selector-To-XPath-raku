@@ -98,8 +98,8 @@ method xpath-qname(% (:$element-name!, :$ns-prefix = $!prefix)) {
     }
 }
 
-multi method _pseudo-func('lang', % (Str:D :$ident! )) {
-    qq<lang(., {$ident})>;
+multi method _pseudo-func('lang', Pair $_ where .key ~~ 'ident') {
+    qq<lang(., {.value})>;
 }
 
 multi method _pseudo-func('contains', %val) {
@@ -149,23 +149,23 @@ sub write-AnB($n, Int $A is copy, Int $B is copy) {
 }
 
 multi method _pseudo-func('nth-child', *@expr) {
-    my :($a, $b) := grok-AnB-expr(@expr);
-     write-AnB('count(preceding-sibling::*)', $a, $b-1) ~ ' and parent::*';
+    my :($a, $b) := @expr.&grok-AnB-expr;
+    'count(preceding-sibling::*)'.&write-AnB($a, $b-1) ~ ' and parent::*';
 }
 
 multi method _pseudo-func('nth-last-child', *@expr) {
     my :($a, $b) := grok-AnB-expr(@expr);
-    write-AnB('count(following-sibling::*)', $a, $b-1) ~ ' and parent::*';
+    'count(following-sibling::*)'.&write-AnB($a, $b-1) ~ ' and parent::*';
 }
 
 multi method _pseudo-func('nth-of-type', *@expr) {
     my :($a, $b) := grok-AnB-expr(@expr);
-    $a ?? write-AnB('position()', $a, $b) !! $b;
+    $a ?? 'position()'.&write-AnB($a, $b) !! $b;
 }
 
 multi method _pseudo-func('nth-last-of-type', *@expr) {
     my :($a, $b) := grok-AnB-expr(@expr);
-    $a ?? write-AnB('count() - position()', $a, $b-1) !! 'count() - ' ~ ($b - 1);
+    $a ?? 'count() - position()'.&write-AnB($a, $b-1) !! 'count() - ' ~ ($b - 1);
 }
 
 multi method _pseudo-func('not', $expr) {
@@ -191,7 +191,7 @@ multi method _pseudo-func(Str:D $name, *@expr) {
     $func;
 }
 
-multi method xpath-pseudo-func( % (Str:D :$ident!, :$expr! )) {
+method xpath-pseudo-func( % (Str:D :$ident!, :$expr! )) {
     $._pseudo-func($ident, |$expr);
 }
 
