@@ -19,7 +19,7 @@
   },
   "resources": [
   ],
-  "source-url": "git://github.com/css-raku/CSS-Selector-To-XPath-raku.git",
+  "source-url": "https://github.com/css-raku/CSS-Selector-To-XPath-raku.git",
   "tags": [
     "xml",
     "html",
@@ -28,5 +28,5 @@
   ],
   "test-depends": [
   ],
-  "version": "0.0.8"
+  "version": "0.0.9"
 }
