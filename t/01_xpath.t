@@ -7,7 +7,7 @@ use XML::Entity;
 
 for '[1a]', '[-1a]', '[--a]', '[!a]', '[ab!c]', '[]', '[x=1a]', '[x=-1a]',
      '[x=--a]', '[x=!a]', '[x=ab!c]', '[x="]', '[x="abc" "]', '[x=abc z]' -> $css {
-    dies-ok { selector-to-xpath(:$css) }, "invalid css selector: $css";
+    fails-like { selector-to-xpath(:$css) }, X::AdHoc, message => rx/'unable to parse CSS selector'/, "invalid css selector: $css";
 }
 
 is CSS::Selector::To::XPath.query-to-xpath('x'), '//x', '.query-to-xpath()';
